@@ -50,16 +50,16 @@
             // 
             // outputTextBox
             // 
-            this.outputTextBox.Location = new System.Drawing.Point(424, 127);
+            this.outputTextBox.Location = new System.Drawing.Point(424, 43);
             this.outputTextBox.Multiline = true;
             this.outputTextBox.Name = "outputTextBox";
             this.outputTextBox.ReadOnly = true;
-            this.outputTextBox.Size = new System.Drawing.Size(364, 203);
+            this.outputTextBox.Size = new System.Drawing.Size(364, 206);
             this.outputTextBox.TabIndex = 1;
             // 
             // compileButton
             // 
-            this.compileButton.Location = new System.Drawing.Point(351, 351);
+            this.compileButton.Location = new System.Drawing.Point(351, 271);
             this.compileButton.Name = "compileButton";
             this.compileButton.Size = new System.Drawing.Size(75, 23);
             this.compileButton.TabIndex = 2;
@@ -71,7 +71,7 @@
             // 
             this.optionsTabControl.Controls.Add(this.editorTab);
             this.optionsTabControl.Controls.Add(this.fileSelectTab);
-            this.optionsTabControl.Location = new System.Drawing.Point(12, 100);
+            this.optionsTabControl.Location = new System.Drawing.Point(12, 23);
             this.optionsTabControl.Name = "optionsTabControl";
             this.optionsTabControl.SelectedIndex = 0;
             this.optionsTabControl.Size = new System.Drawing.Size(343, 230);
@@ -113,7 +113,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 389);
+            this.ClientSize = new System.Drawing.Size(800, 313);
             this.Controls.Add(this.optionsTabControl);
             this.Controls.Add(this.compileButton);
             this.Controls.Add(this.outputTextBox);
