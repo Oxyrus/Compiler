@@ -9,6 +9,7 @@ namespace Compiler
     {
         private OpenFileDialog _openFileDialog;
         private string _fileText = string.Empty;
+        private Output _output;
 
         public Compiler()
         {
@@ -25,13 +26,13 @@ namespace Compiler
         {
             if (optionsTabControl.SelectedTab == editorTab)
             {
-                var output = new Output(codeTextBox.Text);
-                outputTextBox.Text = output.FormattedValue;
+                _output = new Output(codeTextBox.Text);
+                outputTextBox.Text = _output.FormattedValue;
             }
             else
             {
-                var output = new Output(_fileText);
-                outputTextBox.Text = output.FormattedValue;
+                _output = new Output(_fileText);
+                outputTextBox.Text = _output.FormattedValue;
             }
         }
 
