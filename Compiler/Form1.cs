@@ -9,7 +9,7 @@ namespace Compiler
     {
         private OpenFileDialog _openFileDialog;
         private string _fileText = string.Empty;
-        private Output _output;
+        public static Output _output;
 
         public Compiler()
         {
