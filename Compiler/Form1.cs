@@ -34,6 +34,11 @@ namespace Compiler
                 _output = new Output(_fileText);
                 outputTextBox.Text = _output.FormattedValue;
             }
+
+            foreach (var line in _output.Value)
+            {
+                Cache.Cache.Populate(line);
+            }
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
