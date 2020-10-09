@@ -32,13 +32,13 @@ namespace Compiler.Cache
             }
         }
 
-        public static Linea ObtenerLinea(uint numeroLinea)
+        public static Linea ObtenerLinea(int numeroLinea)
         {
             Linea lineaRetorno;
 
             if (ExisteLinea(numeroLinea))
             {
-                lineaRetorno = Lineas[(int)numeroLinea - 1];
+                lineaRetorno = Lineas[numeroLinea - 1];
             }
             else
             {
@@ -48,7 +48,7 @@ namespace Compiler.Cache
             return lineaRetorno;
         }
 
-        public static bool ExisteLinea(uint numeroLinea)
+        public static bool ExisteLinea(int numeroLinea)
         {
             return numeroLinea <= Lineas.Count;
         }

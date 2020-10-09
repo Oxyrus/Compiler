@@ -8,6 +8,17 @@
         Suma,
         Resta,
         Multiplicacion,
-        Division
+        Division,
+        Modulo,
+        ParentesisAbre,
+        ParentesisCierra,
+        FinDeArchivo,
+        IgualQue,
+        DiferenteQue,
+        MenorOIgualQue,
+        MenorQue,
+        MayorOIgualQue,
+        MayorQue,
+        Asignacion,
     }
 }
