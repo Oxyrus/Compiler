@@ -1,4 +1,6 @@
-﻿namespace Compiler.TablaSimbolos
+﻿using System.Text;
+
+namespace Compiler.TablaSimbolos
 {
     public class ComponenteLexico
     {
@@ -22,6 +24,24 @@
         public static ComponenteLexico CrearSimbolo(Categoria categoria, string lexema, int numeroLinea, int posicionInicial, int posicionFinal)
         {
             return new ComponenteLexico(categoria, lexema, numeroLinea, posicionInicial, posicionFinal, TipoComponente.Simbolo);
+        }
+
+        public static ComponenteLexico CrearDummy(Categoria categoria, string lexema, int numeroLinea, int posicionInicial, int posicionFinal)
+        {
+            return new ComponenteLexico(categoria, lexema, numeroLinea, posicionInicial, posicionFinal, TipoComponente.Dummy);
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("Tipo componente: ").Append(TipoComponente.ToString()).Append("\n");
+            sb.Append("Categoria: ").Append(Categoria.ToString()).Append("\n");
+            sb.Append("Lexema: ").Append(Lexema).Append("\n");
+            sb.Append("Número línea: ").Append(NumeroLinea.ToString()).Append("\n");
+            sb.Append("Posición inicial: ").Append(PosicionInicial.ToString()).Append("\n");
+            sb.Append("Posición final: ").Append(PosicionFinal.ToString()).Append("\n");
+
+            return sb.ToString();
         }
     }
 }

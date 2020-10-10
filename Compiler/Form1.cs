@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Compiler.AnalizadorLexico;
+using Compiler.ManejadorErrores;
+using Compiler.TablaSimbolos;
+using System;
 using System.IO;
 using System.Security;
 using System.Windows.Forms;
@@ -24,6 +27,8 @@ namespace Compiler
 
         private void compileButton_Click(object sender, EventArgs e)
         {
+            Inicializar();
+
             if (optionsTabControl.SelectedTab == editorTab)
             {
                 _output = new Output(codeTextBox.Text);
@@ -34,6 +39,20 @@ namespace Compiler
                 _output = new Output(_fileText);
                 outputTextBox.Text = _output.FormattedValue;
             }
+            foreach (var line in _output.Value)
+            {
+                Cache.Cache.Poblar(line);
+            }
+
+            var analizadorLexico = new AnalisisLexico();
+
+            ComponenteLexico componenteLexico = null;
+
+            do
+            {
+                componenteLexico = analizadorLexico.FormarComponente();
+                MessageBox.Show(componenteLexico.ToString());
+            } while (!componenteLexico.Categoria.Equals(Categoria.FinDeArchivo));
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
@@ -50,6 +69,12 @@ namespace Compiler
                     MessageBox.Show("Security error");
                 }
             }
+        }
+
+        private void Inicializar()
+        {
+            TablaMaestra.Limpiar();
+            GestorErrores.Limpiar();
         }
     }
 }

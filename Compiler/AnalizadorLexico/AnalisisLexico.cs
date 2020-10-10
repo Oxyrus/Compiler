@@ -1,4 +1,5 @@
 ﻿using Compiler.Cache;
+using Compiler.ManejadorErrores;
 using Compiler.TablaSimbolos;
 using System;
 
@@ -37,7 +38,7 @@ namespace Compiler.AnalizadorLexico
             }
             else
             {
-                _caracterActual = _lineaActual.Contenido.Substring(_puntero, 1);
+                _caracterActual = _lineaActual.Contenido.Substring(_puntero - 1, 1);
                 AvanzarPuntero();
             }
         }
@@ -98,6 +99,7 @@ namespace Compiler.AnalizadorLexico
             _lexema = "";
             var estadoActual = 0;
             var continuarAnalisis = true;
+            CargarNuevaLinea();
 
             while (continuarAnalisis)
             {
@@ -193,6 +195,19 @@ namespace Compiler.AnalizadorLexico
                     else
                     {
                         estadoActual = 18;
+
+                        var error = Error.CrearErrorLexico(
+                            _lexema,
+                            _numeroLineaActual,
+                            _puntero - _lexema.Length,
+                            _puntero - 1,
+                            "Símbolo no válido",
+                            "Leí \"" + _caracterActual + "\"",
+                            "Asegúrese que los símbolos ingresados son válidos");
+
+                        GestorErrores.Reportar(error);
+
+                        throw new Exception("Se ha presentado un error léxico que tiene el proceso, por favor validar la consola de errores");
                     }
                 }
                 else if (estadoActual == 4)
@@ -240,6 +255,22 @@ namespace Compiler.AnalizadorLexico
                     else
                     {
                         estadoActual = 17;
+                        var error = Error.CrearErrorLexico(
+                            _lexema,
+                            _numeroLineaActual,
+                            _puntero - _lexema.Length,
+                            _puntero - 1,
+                            "Número decimal no válido",
+                            "Después del separador decimal leí \"" + _caracterActual + "\"",
+                            "Asegúrese de que luego del separador decimal se encuentre un dígito del 0 al 9");
+
+                        GestorErrores.Reportar(error);
+
+                        componente = ComponenteLexico.CrearDummy(Categoria.NumeroDecimal, _lexema + "0", _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
+
+                        TablaMaestra.Agregar(componente);
+
+                        continuarAnalisis = false;
                     }
                 }
                 else if (estadoActual == 3)
@@ -325,7 +356,6 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 13)
                 {
-                    CargarNuevaLinea();
 
                     estadoActual = 0;
                 }
@@ -469,6 +499,26 @@ namespace Compiler.AnalizadorLexico
                         TablaMaestra.Agregar(componente);
                         continuarAnalisis = false;
                     }
+                    else
+                    {
+                        estadoActual = 29;
+                        var error = Error.CrearErrorLexico(
+                            _lexema,
+                            _numeroLineaActual,
+                            _puntero - _lexema.Length,
+                            _puntero - 1,
+                            "Asignación no valida",
+                            "Después de los dos puntos (:) leí \"" + _caracterActual + "\"",
+                            "Asegúrese de asignar utilizando :=");
+
+                        componente = ComponenteLexico.CrearDummy(Categoria.Asignacion, _lexema + "=", _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
+
+                        TablaMaestra.Agregar(componente);
+
+                        continuarAnalisis = false;
+
+                        GestorErrores.Reportar(error);
+                    }
                 }
                 else if (estadoActual == 30)
                 {
@@ -480,6 +530,26 @@ namespace Compiler.AnalizadorLexico
                         componente = ComponenteLexico.CrearSimbolo(Categoria.DiferenteQue, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                         TablaMaestra.Agregar(componente);
                         continuarAnalisis = false;
+                    }
+                    else
+                    {
+                        estadoActual = 32;
+                        var error = Error.CrearErrorLexico(
+                            _lexema,
+                            _numeroLineaActual,
+                            _puntero - _lexema.Length,
+                            _puntero - 1,
+                            "Asignación no valida",
+                            "Después de símbolo de exlamación (!) leí \"" + _caracterActual + "\"",
+                            "Asegúrese de diferenciar utilizando !=");
+
+                        componente = ComponenteLexico.CrearDummy(Categoria.DiferenteQue, _lexema + "=", _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
+
+                        TablaMaestra.Agregar(componente);
+
+                        continuarAnalisis = false;
+
+                        GestorErrores.Reportar(error);
                     }
                 }
             }

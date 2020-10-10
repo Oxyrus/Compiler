@@ -3,6 +3,7 @@
     public enum TipoComponente
     {
         Simbolo,
-        PalabraReservada
+        PalabraReservada,
+        Dummy
     }
 }

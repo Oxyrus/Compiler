@@ -16,6 +16,9 @@ namespace Compiler.TablaSimbolos
                     case TipoComponente.PalabraReservada:
                         // Sincronizar con la tabla de palabras reservadas
                         break;
+                    case TipoComponente.Dummy:
+                        TablaDummies.Agregar(componente);
+                        break;
                     default:
                         TablaSimbolos.Agregar(componente);
                         break;
@@ -29,12 +32,14 @@ namespace Compiler.TablaSimbolos
             {
                 TipoComponente.Simbolo => TablaSimbolos.ObtenerTodosSimbolos(),
                 TipoComponente.PalabraReservada => TablaSimbolos.ObtenerTodosSimbolos(),
+                TipoComponente.Dummy => TablaDummies.ObtenerTodosSimbolos(),
                 _ => TablaSimbolos.ObtenerTodosSimbolos(),
             };
         }
 
         public static void Limpiar()
         {
+            TablaDummies.Limpiar();
             TablaSimbolos.Limpiar();
         }
     }
