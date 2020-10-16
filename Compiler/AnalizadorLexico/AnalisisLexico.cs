@@ -51,6 +51,7 @@ namespace Compiler.AnalizadorLexico
             }
         }
 
+        #region test
         private bool CaracterActualEsLetra() => Char.IsLetter(_caracterActual, 0);
 
         private bool CaracterActualEsDigito() => Char.IsDigit(_caracterActual, 0);
@@ -93,13 +94,18 @@ namespace Compiler.AnalizadorLexico
 
         private bool CaracterActualEsComa() => ",".Equals(_caracterActual);
 
+        #endregion
+
         public ComponenteLexico FormarComponente()
         {
             ComponenteLexico componente = null;
             _lexema = "";
             var estadoActual = 0;
             var continuarAnalisis = true;
-            CargarNuevaLinea();
+            if (_lexema == "@FL@" || _lineaActual is null)
+            {
+                CargarNuevaLinea();
+            }
 
             while (continuarAnalisis)
             {
@@ -373,7 +379,7 @@ namespace Compiler.AnalizadorLexico
                     TablaMaestra.Agregar(componente);
                     continuarAnalisis = false;
                 }
-                else if (estadoActual == 14)
+                else if (estadoActual == 15)
                 {
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.NumeroDecimal, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
@@ -432,7 +438,7 @@ namespace Compiler.AnalizadorLexico
                 else if (estadoActual == 12)
                 {
                     DevolverPuntero();
-                    componente = ComponenteLexico.CrearSimbolo(Categoria.FinDeArchivo, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
+                    componente = ComponenteLexico.CrearSimbolo(Categoria.FinDeArchivo, _lexema, _numeroLineaActual, _puntero, _puntero);
                     TablaMaestra.Agregar(componente);
                     continuarAnalisis = false;
                 }
