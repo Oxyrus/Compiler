@@ -53,6 +53,11 @@ namespace Compiler
                 componenteLexico = analizadorLexico.FormarComponente();
                 MessageBox.Show(componenteLexico.ToString());
             } while (!componenteLexico.Categoria.Equals(Categoria.FinDeArchivo));
+
+            tablaSimbolos.DataSource = TablaSimbolos.TablaSimbolos.ObtenerTodosSimbolos();
+            tablaDummies.DataSource = TablaDummies.ObtenerTodosSimbolos();
+            tablaPalabrasReservadas.DataSource = TablaPalabrasReservadas.ObtenerTodosSimbolos();
+            tablaLiterales.DataSource = TablaLiterales.ObtenerTodosSimbolos();
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
@@ -75,6 +80,11 @@ namespace Compiler
         {
             TablaMaestra.Limpiar();
             GestorErrores.Limpiar();
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
         }
     }
 }

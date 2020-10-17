@@ -102,7 +102,7 @@ namespace Compiler.AnalizadorLexico
             _lexema = "";
             var estadoActual = 0;
             var continuarAnalisis = true;
-            if (_lexema == "@FL@" || _lineaActual is null)
+            if (_lineaActual is null || _caracterActual == "@FL@")
             {
                 CargarNuevaLinea();
             }
@@ -331,7 +331,8 @@ namespace Compiler.AnalizadorLexico
                 {
                     LeerSiguienteCaracter();
 
-                    if (CaracterActualEsMultiplicacion()) {
+                    if (CaracterActualEsMultiplicacion())
+                    {
                         estadoActual = 35;
                         Concatenar();
                     }
@@ -367,6 +368,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 16)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.Identificador, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -374,6 +376,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 14)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.NumeroEntero, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -381,6 +384,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 15)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.NumeroDecimal, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -388,6 +392,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 5)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.Suma, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -395,6 +400,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 6)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.Resta, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -402,6 +408,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 7)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.Multiplicacion, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -409,6 +416,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 33)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.Division, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -416,6 +424,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 9)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.Modulo, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -423,6 +432,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 10)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.ParentesisAbre, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -430,6 +440,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 11)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.ParentesisCierra, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);
@@ -437,6 +448,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 12)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.FinDeArchivo, _lexema, _numeroLineaActual, _puntero, _puntero);
                     TablaMaestra.Agregar(componente);
@@ -444,6 +456,7 @@ namespace Compiler.AnalizadorLexico
                 }
                 else if (estadoActual == 19)
                 {
+                    LeerSiguienteCaracter();
                     DevolverPuntero();
                     componente = ComponenteLexico.CrearSimbolo(Categoria.IgualQue, _lexema, _numeroLineaActual, _puntero - _lexema.Length, _puntero - 1);
                     TablaMaestra.Agregar(componente);

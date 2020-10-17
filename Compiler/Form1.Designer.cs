@@ -35,9 +35,17 @@
             this.editorTab = new System.Windows.Forms.TabPage();
             this.fileSelectTab = new System.Windows.Forms.TabPage();
             this.selectFileButton = new System.Windows.Forms.Button();
+            this.tablaSimbolos = new System.Windows.Forms.DataGridView();
+            this.tablaDummies = new System.Windows.Forms.DataGridView();
+            this.tablaPalabrasReservadas = new System.Windows.Forms.DataGridView();
+            this.tablaLiterales = new System.Windows.Forms.DataGridView();
             this.optionsTabControl.SuspendLayout();
             this.editorTab.SuspendLayout();
             this.fileSelectTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaSimbolos)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaDummies)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaPalabrasReservadas)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaLiterales)).BeginInit();
             this.SuspendLayout();
             // 
             // codeTextBox
@@ -109,11 +117,52 @@
             this.selectFileButton.UseVisualStyleBackColor = true;
             this.selectFileButton.Click += new System.EventHandler(this.selectFileButton_Click);
             // 
+            // tablaSimbolos
+            // 
+            this.tablaSimbolos.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tablaSimbolos.Location = new System.Drawing.Point(19, 338);
+            this.tablaSimbolos.Name = "tablaSimbolos";
+            this.tablaSimbolos.Size = new System.Drawing.Size(329, 121);
+            this.tablaSimbolos.TabIndex = 4;
+            this.tablaSimbolos.Text = "dataGridView1";
+            this.tablaSimbolos.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
+            // 
+            // tablaDummies
+            // 
+            this.tablaDummies.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tablaDummies.Location = new System.Drawing.Point(424, 338);
+            this.tablaDummies.Name = "tablaDummies";
+            this.tablaDummies.Size = new System.Drawing.Size(364, 121);
+            this.tablaDummies.TabIndex = 5;
+            this.tablaDummies.Text = "dataGridView1";
+            // 
+            // tablaPalabrasReservadas
+            // 
+            this.tablaPalabrasReservadas.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tablaPalabrasReservadas.Location = new System.Drawing.Point(19, 491);
+            this.tablaPalabrasReservadas.Name = "tablaPalabrasReservadas";
+            this.tablaPalabrasReservadas.Size = new System.Drawing.Size(329, 142);
+            this.tablaPalabrasReservadas.TabIndex = 6;
+            this.tablaPalabrasReservadas.Text = "dataGridView1";
+            // 
+            // tablaLiterales
+            // 
+            this.tablaLiterales.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.tablaLiterales.Location = new System.Drawing.Point(424, 491);
+            this.tablaLiterales.Name = "tablaLiterales";
+            this.tablaLiterales.Size = new System.Drawing.Size(364, 142);
+            this.tablaLiterales.TabIndex = 7;
+            this.tablaLiterales.Text = "dataGridView1";
+            // 
             // Compiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 313);
+            this.ClientSize = new System.Drawing.Size(800, 688);
+            this.Controls.Add(this.tablaLiterales);
+            this.Controls.Add(this.tablaPalabrasReservadas);
+            this.Controls.Add(this.tablaDummies);
+            this.Controls.Add(this.tablaSimbolos);
             this.Controls.Add(this.optionsTabControl);
             this.Controls.Add(this.compileButton);
             this.Controls.Add(this.outputTextBox);
@@ -123,6 +172,10 @@
             this.editorTab.ResumeLayout(false);
             this.editorTab.PerformLayout();
             this.fileSelectTab.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.tablaSimbolos)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaDummies)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaPalabrasReservadas)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.tablaLiterales)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -137,6 +190,10 @@
         private System.Windows.Forms.TabPage editorTab;
         private System.Windows.Forms.TabPage fileSelectTab;
         private System.Windows.Forms.Button selectFileButton;
+        private System.Windows.Forms.DataGridView tablaSimbolos;
+        private System.Windows.Forms.DataGridView tablaDummies;
+        private System.Windows.Forms.DataGridView tablaPalabrasReservadas;
+        private System.Windows.Forms.DataGridView tablaLiterales;
     }
 }
 

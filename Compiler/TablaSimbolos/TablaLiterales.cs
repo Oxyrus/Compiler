@@ -5,13 +5,21 @@ namespace Compiler.TablaSimbolos
 {
     public class TablaLiterales
     {
-        private static Dictionary<string, IEnumerable<ComponenteLexico>> _tablaSimbolos = new Dictionary<string, IEnumerable<ComponenteLexico>>();
+        private static Dictionary<string, List<ComponenteLexico>> _tablaSimbolos = new Dictionary<string, List<ComponenteLexico>>();
 
         public static void Agregar(ComponenteLexico componente)
         {
+
             if (componente != null && componente.TipoComponente == TipoComponente.Literal)
             {
-                ObtenerSimbolo(componente.Lexema).Add(componente);
+                if (_tablaSimbolos.ContainsKey(componente.Lexema))
+                {
+                    _tablaSimbolos[componente.Lexema].Add(componente);
+                }
+                else
+                {
+                    _tablaSimbolos.Add(componente.Lexema, new List<ComponenteLexico> { componente });
+                }
             }
         }
 

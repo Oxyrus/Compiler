@@ -19,7 +19,7 @@ namespace Compiler.TablaSimbolos
             _palabrasReservadasBase.Add("BY", ComponenteLexico.CrearPalabraReservada(Categoria.By, "OR"));
             _palabrasReservadasBase.Add("ASC", ComponenteLexico.CrearPalabraReservada(Categoria.Asc, "ASC"));
             _palabrasReservadasBase.Add("DESC", ComponenteLexico.CrearPalabraReservada(Categoria.Desc, "DESC"));
-            _palabrasReservadasBase.Add("DESC", ComponenteLexico.CrearPalabraReservada(Categoria.From, "FROM"));
+            _palabrasReservadasBase.Add("FROM", ComponenteLexico.CrearPalabraReservada(Categoria.From, "FROM"));
             _palabrasReservadasBase.Add("WHERE", ComponenteLexico.CrearPalabraReservada(Categoria.Where, "WHERE"));
             _palabrasReservadasBase.Add("SELECT", ComponenteLexico.CrearPalabraReservada(Categoria.Select, "SELECT"));
 
