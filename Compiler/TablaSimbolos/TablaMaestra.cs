@@ -8,6 +8,8 @@ namespace Compiler.TablaSimbolos
         {
             if (componente != null)
             {
+                componente = TablaPalabrasReservadas.ComprobarPalabraReservada(componente);
+                componente = TablaLiterales.ComprobarLiteral(componente);
                 switch (componente.TipoComponente)
                 {
                     case TipoComponente.Simbolo:
@@ -19,9 +21,11 @@ namespace Compiler.TablaSimbolos
                     case TipoComponente.Dummy:
                         TablaDummies.Agregar(componente);
                         break;
-                    default:
-                        TablaSimbolos.Agregar(componente);
+                    case TipoComponente.Literal:
+                        TablaLiterales.Agregar(componente);
                         break;
+                    default:
+                        throw new System.Exception("Tipo de componente léxico no soportado");
                 }
             }
         }
@@ -31,9 +35,10 @@ namespace Compiler.TablaSimbolos
             return tipoComponente switch
             {
                 TipoComponente.Simbolo => TablaSimbolos.ObtenerTodosSimbolos(),
-                TipoComponente.PalabraReservada => TablaSimbolos.ObtenerTodosSimbolos(),
+                TipoComponente.PalabraReservada => TablaPalabrasReservadas.ObtenerTodosSimbolos(),
                 TipoComponente.Dummy => TablaDummies.ObtenerTodosSimbolos(),
-                _ => TablaSimbolos.ObtenerTodosSimbolos(),
+                TipoComponente.Literal => TablaLiterales.ObtenerTodosSimbolos(),
+                _ => throw new System.Exception("Tipo de componente léxico no soportado"),
             };
         }
 
@@ -41,6 +46,8 @@ namespace Compiler.TablaSimbolos
         {
             TablaDummies.Limpiar();
             TablaSimbolos.Limpiar();
+            TablaPalabrasReservadas.Limpiar();
+            TablaLiterales.Limpiar();
         }
     }
 }

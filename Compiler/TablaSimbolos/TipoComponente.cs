@@ -4,6 +4,7 @@
     {
         Simbolo,
         PalabraReservada,
-        Dummy
+        Dummy,
+        Literal
     }
 }

@@ -31,6 +31,21 @@ namespace Compiler.TablaSimbolos
             return new ComponenteLexico(categoria, lexema, numeroLinea, posicionInicial, posicionFinal, TipoComponente.Dummy);
         }
 
+        public static ComponenteLexico CrearPalabraReservada(Categoria categoria, string lexema)
+        {
+            return new ComponenteLexico(categoria, lexema, -1, -1, -1, TipoComponente.PalabraReservada);
+        }
+
+        public static ComponenteLexico CrearPalabraReservada(Categoria categoria, string lexema, int numeroLinea, int posicionInicial, int posicionFinal)
+        {
+            return new ComponenteLexico(categoria, lexema, numeroLinea, posicionInicial, posicionFinal, TipoComponente.PalabraReservada);
+        }
+
+        public static ComponenteLexico CrearLiteral(Categoria categoria, string lexema, int numeroLinea, int posicionInicial, int posicionFinal)
+        {
+            return new ComponenteLexico(categoria, lexema, numeroLinea, posicionInicial, posicionFinal, TipoComponente.Literal);
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();

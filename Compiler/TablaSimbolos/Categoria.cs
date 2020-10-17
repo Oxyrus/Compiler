@@ -20,5 +20,14 @@
         MayorOIgualQue,
         MayorQue,
         Asignacion,
+        Where,
+        From,
+        Select,
+        Order,
+        By,
+        Asc,
+        Desc,
+        Or,
+        And
     }
 }
