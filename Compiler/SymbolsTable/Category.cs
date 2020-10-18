@@ -5,9 +5,19 @@
         Identifier,
         Integer,
         Decimal,
-        Addition,
-        Subtraction,
-        Multiplication,
-        Division
+        GreaterThan,
+        GreaterThanOrEqualTo,
+        LessThan,
+        LessThanOrEqualTo,
+        DifferentThan,
+        Select,
+        From,
+        Where,
+        Order,
+        By,
+        And,
+        Or,
+        Asc,
+        Desc,
     }
 }

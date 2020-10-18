@@ -8,7 +8,13 @@ namespace Compiler.LexicalAnalyzer
         private int _currentLineNumber;
         private int _pointer;
         private string _currentCharacter;
+        private string _lexeme = "";
         private Line _currentLine;
+
+        public LexicalAnalysis()
+        {
+            LoadNewLine();
+        }
 
         private void LoadNewLine()
         {
@@ -35,7 +41,7 @@ namespace Compiler.LexicalAnalyzer
             }
             else
             {
-                _currentCharacter = _currentLine.Content.Substring(_pointer, 1);
+                _currentCharacter = _currentLine.Content.Substring(_pointer - 1, 1);
                 MovePointerForward();
             }
         }
@@ -47,6 +53,32 @@ namespace Compiler.LexicalAnalyzer
                 ReadNextCharacter();
             }
         }
+
+        #region Checks
+
+        private bool CurrentCharacterIsLetter() => char.IsLetter(_currentCharacter, 0);
+
+        private bool CurrentCharacterIsDigit() => char.IsDigit(_currentCharacter, 0);
+
+        private bool CurrentCharacterIsLetterOrDigit() => char.IsLetterOrDigit(_currentCharacter, 0);
+
+        private bool CurrentCharacterIsGreaterThan() => ">" == _currentCharacter;
+
+        private bool CurrentCharacterIsLessThan() => "<" == _currentCharacter;
+
+        private bool CurrentCharacterIsEqual() => "=" == _currentCharacter;
+
+        private bool CurrentCharacterIsExclamationMark() => "!" == _currentCharacter;
+
+        private bool CurrentCharacterIsDot() => "." == _currentCharacter;
+
+        private bool CurrentCharacterIsEndOfLine() => "@FL@" == _currentCharacter;
+
+        private bool CurrentCharacterIsEndOfFile() => "@EOF@" == _currentCharacter;
+
+        private void Concatenate() => _lexeme += _currentCharacter;
+
+        #endregion
 
         public LexicalComponent BuildComponent()
         {
@@ -72,6 +104,6 @@ namespace Compiler.LexicalAnalyzer
 
         private void MovePointerForward() => _pointer += 1;
 
-        private void MovePointerBackward() => _pointer -= 1;
+        private void MovePointerBackwards() => _pointer -= 1;
     }
 }

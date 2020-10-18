@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Compiler.SymbolsTable
 {
@@ -8,17 +9,24 @@ namespace Compiler.SymbolsTable
         {
             if (component != null)
             {
+                component = ReservedKeywordsTable.CheckReservedKeyword(component);
+                component = LiteralsTable.CheckLiteral(component);
                 switch (component.ComponentType)
                 {
                     case ComponentType.Symbol:
                         SymbolsTable.Add(component);
                         break;
                     case ComponentType.ReservedKeyword:
-                        // Sync with the table of reserved keywords
+                        ReservedKeywordsTable.Add(component);
+                        break;
+                    case ComponentType.Dummy:
+                        DummiesTable.Add(component);
+                        break;
+                    case ComponentType.Literal:
+                        LiteralsTable.Add(component);
                         break;
                     default:
-                        SymbolsTable.Add(component);
-                        break;
+                        throw new Exception("Unsupported lexical component type");
                 }
             }
         }
@@ -28,11 +36,19 @@ namespace Compiler.SymbolsTable
             return componentType switch
             {
                 ComponentType.Symbol => SymbolsTable.ObtainAllSymbols(),
-                ComponentType.ReservedKeyword => SymbolsTable.ObtainAllSymbols(),
-                _ => SymbolsTable.ObtainAllSymbols()
+                ComponentType.ReservedKeyword => ReservedKeywordsTable.ObtainAllSymbols(),
+                ComponentType.Dummy => DummiesTable.ObtainAllSymbols(),
+                ComponentType.Literal => LiteralsTable.ObtainAllSymbols(),
+                _ => throw new Exception("Unsupported lexical component type")
             };
         }
 
-        public static void Clear() => SymbolsTable.Clear();
+        public static void Clear()
+        {
+            SymbolsTable.Clear();
+            ReservedKeywordsTable.Clear();
+            DummiesTable.Clear();
+            LiteralsTable.Clear();
+        }
     }
 }

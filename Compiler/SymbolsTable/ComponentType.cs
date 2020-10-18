@@ -3,6 +3,8 @@
     public enum ComponentType
     {
         Symbol,
-        ReservedKeyword
+        ReservedKeyword,
+        Dummy,
+        Literal
     }
 }
