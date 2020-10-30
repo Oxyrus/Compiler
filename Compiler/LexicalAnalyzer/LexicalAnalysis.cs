@@ -1,4 +1,5 @@
 ﻿using Compiler.Cache;
+using Compiler.ErrorHandler;
 using Compiler.SymbolsTable;
 using System;
 
@@ -49,6 +50,7 @@ namespace Compiler.LexicalAnalyzer
                 ReadNextCharacter();
             }
         }
+
         private bool CaracterActualEsLetra() => Char.IsLetter(_currentCharacter, 0);
 
         private bool CaracterActualEsDigito() => Char.IsDigit(_currentCharacter, 0);
@@ -195,7 +197,7 @@ namespace Compiler.LexicalAnalyzer
                         {
                             currentState = 18;
 
-                            var error = Error.CrearErrorLexico(
+                            var error = Error.CreateLexicalError(
                                 _lexeme,
                                 _currentLineNumber,
                                 _pointer - _lexeme.Length,
@@ -204,7 +206,7 @@ namespace Compiler.LexicalAnalyzer
                                 "Leí \"" + _currentCharacter + "\"",
                                 "Asegúrese que los símbolos ingresados son válidos");
 
-                            GestorErrores.Reportar(error);
+                            ErrorHandler.ErrorHandler.Report(error);
 
                             throw new Exception("Se ha presentado un error léxico que tiene el proceso, por favor validar la consola de errores");
                         }
@@ -254,7 +256,7 @@ namespace Compiler.LexicalAnalyzer
                         else
                         {
                             currentState = 17;
-                            var error = Error.CrearErrorLexico(
+                            var error = Error.CreateLexicalError(
                                 _lexeme,
                                 _currentLineNumber,
                                 _pointer - _lexeme.Length,
@@ -263,9 +265,9 @@ namespace Compiler.LexicalAnalyzer
                                 "Después del separador decimal leí \"" + _currentCharacter + "\"",
                                 "Asegúrese de que luego del separador decimal se encuentre un dígito del 0 al 9");
 
-                            GestorErrores.Reportar(error);
+                            ErrorHandler.ErrorHandler.Report(error);
 
-                            component = LexicalComponent.CrearDummy(Category.NumeroDecimal, _lexeme + "0", _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateDummy(Category.Decimal, _lexeme + "0", _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
 
                             MasterTable.Add(component);
 
@@ -363,7 +365,7 @@ namespace Compiler.LexicalAnalyzer
                     {
                         ReadNextCharacter();
                         MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Identificador, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                        component = LexicalComponent.CreateSymbol(Category.Identifier, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                         MasterTable.Add(component);
                         continueAnalysis = false;
                     }
@@ -371,7 +373,7 @@ namespace Compiler.LexicalAnalyzer
                     {
                         ReadNextCharacter();
                         MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.NumeroEntero, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                        component = LexicalComponent.CreateSymbol(Category.Integer, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                         MasterTable.Add(component);
                         continueAnalysis = false;
                     }
@@ -379,63 +381,7 @@ namespace Compiler.LexicalAnalyzer
                     {
                         ReadNextCharacter();
                         MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.NumeroDecimal, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 5)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Suma, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 6)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Resta, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 7)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Multiplicacion, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 33)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Division, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 9)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Modulo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 10)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.ParentesisAbre, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 11)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.ParentesisCierra, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                        component = LexicalComponent.CreateSymbol(Category.Decimal, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                         MasterTable.Add(component);
                         continueAnalysis = false;
                     }
@@ -443,7 +389,7 @@ namespace Compiler.LexicalAnalyzer
                     {
                         ReadNextCharacter();
                         MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.FinDeArchivo, _lexeme, _currentLineNumber, _pointer, _pointer);
+                        component = LexicalComponent.CreateSymbol(Category.EndOfFile, _lexeme, _currentLineNumber, _pointer, _pointer);
                         MasterTable.Add(component);
                         continueAnalysis = false;
                     }
@@ -451,7 +397,7 @@ namespace Compiler.LexicalAnalyzer
                     {
                         ReadNextCharacter();
                         MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.IgualQue, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                        component = LexicalComponent.CreateSymbol(Category.EqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                         MasterTable.Add(component);
                         continueAnalysis = false;
                     }
@@ -462,21 +408,21 @@ namespace Compiler.LexicalAnalyzer
                         if (CaracterActualEsMayorQue())
                         {
                             MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.DiferenteQue, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateSymbol(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                             MasterTable.Add(component);
                             continueAnalysis = false;
                         }
                         else if (CaracterActualEsIgual())
                         {
                             MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.MenorOIgualQue, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateSymbol(Category.LessThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                             MasterTable.Add(component);
                             continueAnalysis = false;
                         }
                         else
                         {
                             MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.MenorQue, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateSymbol(Category.LessThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                             MasterTable.Add(component);
                             continueAnalysis = false;
                         }
@@ -488,48 +434,16 @@ namespace Compiler.LexicalAnalyzer
                         if (CaracterActualEsIgual())
                         {
                             MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.MayorOIgualQue, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateSymbol(Category.GreaterThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                             MasterTable.Add(component);
                             continueAnalysis = false;
                         }
                         else
                         {
                             MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.MayorQue, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateSymbol(Category.GreaterThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                             MasterTable.Add(component);
                             continueAnalysis = false;
-                        }
-                    }
-                    else if (currentState == 22)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsIgual())
-                        {
-                            MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.Asignacion, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                            MasterTable.Add(component);
-                            continueAnalysis = false;
-                        }
-                        else
-                        {
-                            currentState = 29;
-                            var error = Error.CrearErrorLexico(
-                                _lexeme,
-                                _currentLineNumber,
-                                _pointer - _lexeme.Length,
-                                _pointer - 1,
-                                "Asignación no valida",
-                                "Después de los dos puntos (:) leí \"" + _currentCharacter + "\"",
-                                "Asegúrese de asignar utilizando :=");
-
-                            component = LexicalComponent.CrearDummy(Category.Asignacion, _lexeme + "=", _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-
-                            MasterTable.Add(component);
-
-                            continueAnalysis = false;
-
-                            GestorErrores.Reportar(error);
                         }
                     }
                     else if (currentState == 30)
@@ -539,14 +453,14 @@ namespace Compiler.LexicalAnalyzer
                         if (CaracterActualEsIgual())
                         {
                             MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.DiferenteQue, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateSymbol(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
                             MasterTable.Add(component);
                             continueAnalysis = false;
                         }
                         else
                         {
                             currentState = 32;
-                            var error = Error.CrearErrorLexico(
+                            var error = Error.CreateLexicalError(
                                 _lexeme,
                                 _currentLineNumber,
                                 _pointer - _lexeme.Length,
@@ -555,13 +469,13 @@ namespace Compiler.LexicalAnalyzer
                                 "Después de símbolo de exlamación (!) leí \"" + _currentCharacter + "\"",
                                 "Asegúrese de diferenciar utilizando !=");
 
-                            component = LexicalComponent.CrearDummy(Category.DiferenteQue, _lexeme + "=", _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                            component = LexicalComponent.CreateDummy(Category.DifferentThan, _lexeme + "=", _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
 
                             MasterTable.Add(component);
 
                             continueAnalysis = false;
 
-                            GestorErrores.Reportar(error);
+                            ErrorHandler.ErrorHandler.Report(error);
                         }
                     }
                 }

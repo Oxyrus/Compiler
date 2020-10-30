@@ -10,6 +10,7 @@
         LessThan,
         LessThanOrEqualTo,
         DifferentThan,
+        EqualTo,
         Select,
         From,
         Where,
@@ -19,5 +20,6 @@
         Or,
         Asc,
         Desc,
+        EndOfFile
     }
 }
