@@ -1,4 +1,5 @@
 ﻿using Compiler.AnalizadorLexico;
+using Compiler.AnalizadorSintactico;
 using Compiler.ManejadorErrores;
 using Compiler.TablaSimbolos;
 using System;
@@ -44,6 +45,12 @@ namespace Compiler
                 Cache.Cache.Poblar(line);
             }
 
+            var analisisSintactico = new AnalisisSintactico();
+            // Lectura bandera de depuracion
+            analisisSintactico.Analizar(true);
+
+            /*
+
             var analizadorLexico = new AnalisisLexico();
 
             ComponenteLexico componenteLexico = null;
@@ -53,6 +60,7 @@ namespace Compiler
                 componenteLexico = analizadorLexico.FormarComponente();
                 MessageBox.Show(componenteLexico.ToString());
             } while (!componenteLexico.Categoria.Equals(Categoria.FinDeArchivo));
+            ¨*/
 
             tablaSimbolos.DataSource = TablaSimbolos.TablaSimbolos.ObtenerTodosSimbolos();
             tablaDummies.DataSource = TablaDummies.ObtenerTodosSimbolos();
