@@ -51,439 +51,431 @@ namespace Compiler.LexicalAnalyzer
             }
         }
 
-        private bool CaracterActualEsLetra() => Char.IsLetter(_currentCharacter, 0);
+        private bool CurrentCharacterIsLetter() => char.IsLetter(_currentCharacter, 0);
 
-        private bool CaracterActualEsDigito() => Char.IsDigit(_currentCharacter, 0);
+        private bool CurrentCharacterIsDigit() => char.IsDigit(_currentCharacter, 0);
 
-        private bool CaracterActualEsLetraODigito() => Char.IsLetterOrDigit(_currentCharacter, 0);
+        private bool CurrentCharacterIsLetterOrDigit() => char.IsLetterOrDigit(_currentCharacter, 0);
 
-        private bool CaracterActualEsSignoPesos() => "$".Equals(_currentCharacter);
+        private bool CurrentCharacterIsGreaterThan() => ">" == _currentCharacter;
 
-        private bool CaracterActualEsGuionBajo() => "_".Equals(_currentCharacter);
+        private bool CurrentCharacterIsLessThan() => "<" == _currentCharacter;
 
-        private void Concatenar() => _lexeme += _currentCharacter;
+        private bool CurrentCharacterIsEqual() => "=" == _currentCharacter;
 
-        private bool CaracterActualEsSuma() => "+".Equals(_currentCharacter);
+        private bool CurrentCharacterIsExclamationMark() => "!" == _currentCharacter;
 
-        private bool CaracterActualEsResta() => "-".Equals(_currentCharacter);
+        private bool CurrentCharacterIsDot() => "." == _currentCharacter;
 
-        private bool CaracterActualEsMultiplicacion() => "*".Equals(_currentCharacter);
+        private bool CurrentCharacterIsEndOfLine() => "@FL@" == _currentCharacter;
 
-        private bool CaracterActualEsDivision() => "/".Equals(_currentCharacter);
+        private bool CurrentCharacterIsEndOfFile() => "@EOF@" == _currentCharacter;
 
-        private bool CaracterActualEsModulo() => "%".Equals(_currentCharacter);
+        private bool CurrentCharacterIsUnderscore() => "_" == _currentCharacter;
 
-        private bool CaracterActualEsParentesisAbre() => "(".Equals(_currentCharacter);
+        private bool CurrentCharacterIsDollarSign() => "$" == _currentCharacter;
 
-        private bool CaracterActualEsParentesisCierra() => ")".Equals(_currentCharacter);
+        private bool CurrentCharacterIsSinglequote() => "'" == _currentCharacter;
 
-        private bool CaracterActualEsIgual() => "=".Equals(_currentCharacter);
-
-        private bool CaracterActualEsMenorQue() => "<".Equals(_currentCharacter);
-
-        private bool CaracterActualEsMayorQue() => ">".Equals(_currentCharacter);
-
-        private bool CaracterActualEsDosPuntos() => ":".Equals(_currentCharacter);
-
-        private bool CaracterActualEsSignoExclamacion() => "!".Equals(_currentCharacter);
-
-        private bool CaracterActualEsFinDeLinea() => "@FL@".Equals(_currentCharacter);
-
-        private bool CaracterActualEsFinDeArchivo() => "@EOF@".Equals(_currentCharacter);
-
-        private bool CaracterActualEsComa() => ",".Equals(_currentCharacter);
+        private void Concatenate() => _lexeme += _currentCharacter;
 
         public LexicalComponent BuildComponent()
         {
             LexicalComponent component = null;
-            var lexeme = "";
+            _lexeme = "";
             var currentState = 0;
             var continueAnalysis = true;
 
-            while (continueAnalysis)
+            if (_currentLine is null || CurrentCharacterIsEndOfLine())
             {
-             
-                {
-                    if (currentState == 0)
-                    {
-                        ReadNextCharacter();
-                        IgnoreWhitespaces();
-
-                        if (CaracterActualEsLetra() || CaracterActualEsGuionBajo() || CaracterActualEsSignoPesos())
-                        {
-                            currentState = 4;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsDigito())
-                        {
-                            currentState = 1;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsSuma())
-                        {
-                            currentState = 5;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsResta())
-                        {
-                            currentState = 6;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsMultiplicacion())
-                        {
-                            currentState = 7;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsMultiplicacion())
-                        {
-                            currentState = 7;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsDivision())
-                        {
-                            currentState = 8;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsModulo())
-                        {
-                            currentState = 9;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsParentesisAbre())
-                        {
-                            currentState = 10;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsParentesisCierra())
-                        {
-                            currentState = 11;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsIgual())
-                        {
-                            currentState = 19;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsMenorQue())
-                        {
-                            currentState = 20;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsMayorQue())
-                        {
-                            currentState = 21;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsDosPuntos())
-                        {
-                            currentState = 22;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsSignoExclamacion())
-                        {
-                            currentState = 30;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsFinDeLinea())
-                        {
-                            currentState = 13;
-                        }
-                        else if (CaracterActualEsFinDeArchivo())
-                        {
-                            currentState = 12;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 18;
-
-                            var error = Error.CreateLexicalError(
-                                _lexeme,
-                                _currentLineNumber,
-                                _pointer - _lexeme.Length,
-                                _pointer - 1,
-                                "Símbolo no válido",
-                                "Leí \"" + _currentCharacter + "\"",
-                                "Asegúrese que los símbolos ingresados son válidos");
-
-                            ErrorHandler.ErrorHandler.Report(error);
-
-                            throw new Exception("Se ha presentado un error léxico que tiene el proceso, por favor validar la consola de errores");
-                        }
-                    }
-                    else if (currentState == 4)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsLetraODigito() || CaracterActualEsSignoPesos() || CaracterActualEsGuionBajo())
-                        {
-                            currentState = 4;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 16;
-                        }
-                    }
-                    else if (currentState == 1)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsDigito())
-                        {
-                            currentState = 1;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsComa())
-                        {
-                            currentState = 2;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 14;
-                        }
-                    }
-                    else if (currentState == 2)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsDigito())
-                        {
-                            currentState = 3;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 17;
-                            var error = Error.CreateLexicalError(
-                                _lexeme,
-                                _currentLineNumber,
-                                _pointer - _lexeme.Length,
-                                _pointer - 1,
-                                "Número decimal no válido",
-                                "Después del separador decimal leí \"" + _currentCharacter + "\"",
-                                "Asegúrese de que luego del separador decimal se encuentre un dígito del 0 al 9");
-
-                            ErrorHandler.ErrorHandler.Report(error);
-
-                            component = LexicalComponent.CreateDummy(Category.Decimal, _lexeme + "0", _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-
-                            MasterTable.Add(component);
-
-                            continueAnalysis = false;
-                        }
-                    }
-                    else if (currentState == 3)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsDigito())
-                        {
-                            currentState = 3;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 15;
-                        }
-                    }
-                    else if (currentState == 8)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsMultiplicacion())
-                        {
-                            currentState = 34;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsDivision())
-                        {
-                            currentState = 36;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 33;
-                        }
-                    }
-                    else if (currentState == 34)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsMultiplicacion())
-                        {
-                            currentState = 35;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 34;
-                            Concatenar();
-                        }
-                    }
-                    else if (currentState == 35)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsMultiplicacion())
-                        {
-                            currentState = 35;
-                            Concatenar();
-                        }
-                        else if (CaracterActualEsDivision())
-                        {
-                            currentState = 0;
-                            Concatenar();
-                        }
-                        else
-                        {
-                            currentState = 34;
-                            Concatenar();
-                        }
-                    }
-                    else if (currentState == 36)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsFinDeLinea())
-                        {
-                            currentState = 13;
-                        }
-                        else
-                        {
-                            currentState = 36;
-                            Concatenar();
-                        }
-                    }
-                    else if (currentState == 13)
-                    {
-
-                        currentState = 0;
-                    }
-                    else if (currentState == 16)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Identifier, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 14)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Integer, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 15)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.Decimal, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 12)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.EndOfFile, _lexeme, _currentLineNumber, _pointer, _pointer);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 19)
-                    {
-                        ReadNextCharacter();
-                        MovePointerBackward();
-                        component = LexicalComponent.CreateSymbol(Category.EqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                        MasterTable.Add(component);
-                        continueAnalysis = false;
-                    }
-                    else if (currentState == 20)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsMayorQue())
-                        {
-                            MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                            MasterTable.Add(component);
-                            continueAnalysis = false;
-                        }
-                        else if (CaracterActualEsIgual())
-                        {
-                            MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.LessThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                            MasterTable.Add(component);
-                            continueAnalysis = false;
-                        }
-                        else
-                        {
-                            MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.LessThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                            MasterTable.Add(component);
-                            continueAnalysis = false;
-                        }
-                    }
-                    else if (currentState == 21)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsIgual())
-                        {
-                            MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.GreaterThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                            MasterTable.Add(component);
-                            continueAnalysis = false;
-                        }
-                        else
-                        {
-                            MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.GreaterThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                            MasterTable.Add(component);
-                            continueAnalysis = false;
-                        }
-                    }
-                    else if (currentState == 30)
-                    {
-                        ReadNextCharacter();
-
-                        if (CaracterActualEsIgual())
-                        {
-                            MovePointerBackward();
-                            component = LexicalComponent.CreateSymbol(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-                            MasterTable.Add(component);
-                            continueAnalysis = false;
-                        }
-                        else
-                        {
-                            currentState = 32;
-                            var error = Error.CreateLexicalError(
-                                _lexeme,
-                                _currentLineNumber,
-                                _pointer - _lexeme.Length,
-                                _pointer - 1,
-                                "Asignación no valida",
-                                "Después de símbolo de exlamación (!) leí \"" + _currentCharacter + "\"",
-                                "Asegúrese de diferenciar utilizando !=");
-
-                            component = LexicalComponent.CreateDummy(Category.DifferentThan, _lexeme + "=", _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-
-                            MasterTable.Add(component);
-
-                            continueAnalysis = false;
-
-                            ErrorHandler.ErrorHandler.Report(error);
-                        }
-                    }
-                }
-
+                LoadNewLine();
             }
 
-            // return component;
-            return null;
+            while (continueAnalysis)
+            {
+                #region State 0
+                if (currentState == 0)
+                {
+                    ReadNextCharacter();
+                    IgnoreWhitespaces();
+
+                    if (CurrentCharacterIsLetter() || CurrentCharacterIsUnderscore() || CurrentCharacterIsDollarSign())
+                    {
+                        currentState = 1;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsDigit())
+                    {
+                        currentState = 3;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsSinglequote())
+                    {
+                        currentState = 9;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsGreaterThan())
+                    {
+                        currentState = 12;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsLessThan())
+                    {
+                        currentState = 15;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsExclamationMark())
+                    {
+                        currentState = 19;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 22;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsEndOfLine())
+                    {
+                        currentState = 23;
+                    }
+                    else if (CurrentCharacterIsEndOfFile())
+                    {
+                        currentState = 24;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 25;
+
+                        var error = Error.CreateLexicalError(
+                            _lexeme,
+                            _currentLineNumber,
+                            _pointer - _lexeme.Length,
+                            _pointer - 1,
+                            "Invalid symbol",
+                            _currentCharacter + " was read" + "\"",
+                            "Make sure the data is valid");
+
+                        ErrorHandler.ErrorHandler.Report(error);
+
+                        throw new InvalidOperationException("There was a lexical error, check the console for more info.");
+                    }
+                }
+                #endregion
+
+                #region State 1
+                else if (currentState == 1)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsDigit() || CurrentCharacterIsLetter() || CurrentCharacterIsUnderscore() || CurrentCharacterIsDollarSign())
+                    {
+                        currentState = 1;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 2;
+                    }
+                }
+                #endregion
+
+                #region State 3
+                else if (currentState == 3)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsDigit())
+                    {
+                        currentState = 3;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsDot())
+                    {
+                        currentState = 4;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 7;
+                    }
+                }
+                #endregion
+
+                #region State 9
+                else if (currentState == 9)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsSinglequote())
+                    {
+                        currentState = 10;
+                    }
+                    else
+                    {
+                        currentState = 9;
+                        Concatenate();
+                    }
+                }
+                #endregion
+
+                #region State 12
+                else if (currentState == 9)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 13;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 14;
+                    }
+                }
+                #endregion
+
+                #region State 15
+                else if (currentState == 15)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsGreaterThan())
+                    {
+                        currentState = 16;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 17;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 18;
+                    }
+                }
+                #endregion
+
+                #region State 19
+                else if (currentState == 19)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 20;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 21;
+
+                        var error = Error.CreateLexicalError(
+                            _lexeme,
+                            _currentLineNumber,
+                            _pointer - _lexeme.Length,
+                            _pointer - 1,
+                            "Invalid symbol",
+                            _currentCharacter + " was read" + "\"",
+                            "Invalid different than");
+
+                        ErrorHandler.ErrorHandler.Report(error);
+
+                        throw new InvalidOperationException("There was a lexical error, check the console for more info.");
+                    }
+                }
+                #endregion
+
+                #region State 4
+                else if (currentState == 4)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsDigit())
+                    {
+                        currentState = 5;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 8;
+
+                        var error = Error.CreateLexicalError(
+                            _lexeme,
+                            _currentLineNumber,
+                            _pointer - _lexeme.Length,
+                            _pointer - 1,
+                            "Invalid decimal",
+                            _currentCharacter + " was read" + "\"",
+                            "Make sure the decimal number is valid");
+
+                        ErrorHandler.ErrorHandler.Report(error);
+
+                        throw new InvalidOperationException("There was a lexical error, check the console for more info.");
+                    }
+                }
+                #endregion
+
+                #region State 5
+                else if (currentState == 5)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsDigit())
+                    {
+                        currentState = 5;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 6;
+                    }
+                }
+                #endregion
+
+                #region Identifier
+                else if (currentState == 2)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.Identifier, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Decimal
+                else if (currentState == 6)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.Decimal, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Integer
+                else if (currentState == 6)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.Integer, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Literal
+                else if (currentState == 11)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateLiteral(Category.Literal, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Greater than
+                else if (currentState == 14)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.GreaterThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Greater than or equal
+                else if (currentState == 13)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.GreaterThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Less than
+                else if (currentState == 18)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.LessThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Less than or equal
+                else if (currentState == 17)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.LessThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Different than
+                else if (currentState == 16 || currentState == 20)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region Equal to
+                else if (currentState == 22)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.EqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region End of file
+                else if (currentState == 24)
+                {
+                    ReadNextCharacter();
+                    MovePointerBackward();
+
+                    component = LexicalComponent.CreateSymbol(Category.EndOfFile, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region End of line
+                else if (currentState == 23)
+                {
+                    currentState = 0;
+                }
+                #endregion
+            }
+
+            return component;
         }
 
         private void ResetPointer() => _pointer = 0;

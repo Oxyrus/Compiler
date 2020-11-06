@@ -20,6 +20,7 @@
         Or,
         Asc,
         Desc,
-        EndOfFile
+        EndOfFile,
+        Literal
     }
 }
