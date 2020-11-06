@@ -38,7 +38,7 @@ namespace Compiler.LexicalAnalyzer
             }
             else
             {
-                _currentCharacter = _currentLine.Content.Substring(_pointer, 1);
+                _currentCharacter = _currentLine.Content.Substring(_pointer - 1, 1);
                 MovePointerForward();
             }
         }
@@ -86,10 +86,9 @@ namespace Compiler.LexicalAnalyzer
             var currentState = 0;
             var continueAnalysis = true;
 
-            if (_currentLine is null || CurrentCharacterIsEndOfLine())
-            {
+            // Hay que validar si en la linea todavia se puede leer más
+            if (_currentLine is null || _currentCharacter == "@FL@")
                 LoadNewLine();
-            }
 
             while (continueAnalysis)
             {
@@ -220,7 +219,7 @@ namespace Compiler.LexicalAnalyzer
                 #endregion
 
                 #region State 12
-                else if (currentState == 9)
+                else if (currentState == 12)
                 {
                     ReadNextCharacter();
 
@@ -478,7 +477,7 @@ namespace Compiler.LexicalAnalyzer
             return component;
         }
 
-        private void ResetPointer() => _pointer = 0;
+        private void ResetPointer() => _pointer = 1;
 
         private void MovePointerForward() => _pointer += 1;
 

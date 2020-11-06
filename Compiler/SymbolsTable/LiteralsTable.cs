@@ -33,7 +33,7 @@ namespace Compiler.SymbolsTable
                     component.InitialPosition,
                     component.FinalPosition);
             }
-            return null;
+            return component;
         }
 
         public static List<LexicalComponent> ObtainSymbol(string lexeme)

@@ -44,7 +44,7 @@ namespace Compiler.SymbolsTable
                     component.FinalPosition);
             }
 
-            return null;
+            return component;
         }
 
         public static void Add(LexicalComponent component)

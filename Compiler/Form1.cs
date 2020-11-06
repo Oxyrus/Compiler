@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Compiler.LexicalAnalyzer;
+using Compiler.SymbolsTable;
+using System;
 using System.IO;
 using System.Security;
 using System.Windows.Forms;
@@ -39,6 +41,17 @@ namespace Compiler
             {
                 Cache.Cache.Populate(line);
             }
+
+            var lexicalAnalyzer = new LexicalAnalysis();
+            LexicalComponent lexicalComponent = null;
+
+            do
+            {
+                lexicalComponent = lexicalAnalyzer.BuildComponent();
+                MessageBox.Show(lexicalComponent.ToString());
+            } while (!lexicalComponent.Category.Equals(Category.EndOfFile));
+
+            MessageBox.Show("Ejecución finalizada");
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
