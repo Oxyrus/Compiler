@@ -2,6 +2,7 @@
 using Compiler.ManejadorErrores;
 using Compiler.TablaSimbolos;
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace Compiler.AnalizadorSintactico
@@ -12,6 +13,7 @@ namespace Compiler.AnalizadorSintactico
         private bool DepuracionHabilitada;
         private ComponenteLexico _componenteLexico;
         private string pilaLlamados = string.Empty;
+        private Stack<double> pila = new Stack<double>();
 
         public AnalisisSintactico()
         {
@@ -31,6 +33,14 @@ namespace Compiler.AnalizadorSintactico
             else if (_componenteLexico.Categoria == Categoria.FinDeArchivo)
             {
                 MessageBox.Show("El programa compilo de forma satisfactoria");
+                if (pila.Count == 1)
+                {
+                    MessageBox.Show("El resultado de la operacion es " + pila.Pop());
+                }
+                else
+                {
+                    MessageBox.Show("El programa esta bien escrito pero faltaron números por evaluar " + pila.Pop());
+                }
             }
             else
             {
@@ -52,6 +62,12 @@ namespace Compiler.AnalizadorSintactico
         private void DepurarSalida(string indentacion, string regla)
         {
             pilaLlamados += indentacion + " SALIENDO DE REGLA " + regla + "\n";
+            ImprimirTraza();
+        }
+
+        private void DepurarOperacion(string indentacion, double derecho, double izquierdo, string operacion)
+        {
+            pilaLlamados += indentacion + " REALIZANDO OPERACION " + derecho.ToString() + operacion + derecho.ToString() + "\n";
             ImprimirTraza();
         }
 
@@ -80,11 +96,23 @@ namespace Compiler.AnalizadorSintactico
             {
                 PedirComponente();
                 Expresion(indentacionProximoNivel);
+                var derecha = pila.Pop();
+                var izquierda = pila.Pop();
+
+                DepurarOperacion(indentacionProximoNivel, derecha, izquierda, "+");
+
+                pila.Push(izquierda + derecha);
             }
             else if (_componenteLexico.Categoria == Categoria.Resta)
             {
                 PedirComponente();
                 Expresion(indentacionProximoNivel);
+                var derecha = pila.Pop();
+                var izquierda = pila.Pop();
+
+                DepurarOperacion(indentacionProximoNivel, derecha, izquierda, "-");
+
+                pila.Push(izquierda - derecha);
             }
             DepurarSalida(indentacion, "<ExpresionPrima>");
         }
@@ -98,6 +126,7 @@ namespace Compiler.AnalizadorSintactico
             DepurarSalida(indentacion, "<Termino>");
         }
 
+        // <TerminoPrima> := * <Termino> {push{{pop-2}*{pop-1}} | / <Termino> {push{{pop-2}/{pop-1}} | ??
         private void TerminoPrima(string indentacion)
         {
             DepurarEntrada(indentacion, "<TerminoPrima>");
@@ -106,11 +135,38 @@ namespace Compiler.AnalizadorSintactico
             {
                 PedirComponente();
                 Termino(indentacionProximoNivel);
+                var derecho = pila.Pop();
+                var izquierdo = pila.Pop();
+
+                DepurarOperacion(indentacionProximoNivel, derecho, izquierdo, "*");
+
+                pila.Push(izquierdo * derecho);
             }
             else if (_componenteLexico.Categoria == Categoria.Division)
             {
                 PedirComponente();
                 Termino(indentacionProximoNivel);
+                var derecho = pila.Pop();
+                var izquierdo = pila.Pop();
+                if (derecho == 0)
+                {
+                    var error = Error.CrearErrorSemantico(
+                        _componenteLexico.Lexema,
+                        _componenteLexico.NumeroLinea,
+                        _componenteLexico.PosicionInicial,
+                        _componenteLexico.PosicionFinal,
+                        "Division por cero",
+                        "Lei \"" + _componenteLexico.Lexema + "\"",
+                        "asegurese de que el denominador no sea cero");
+
+                    GestorErrores.Reportar(error);
+
+                    derecho = 1;
+                }
+
+                DepurarOperacion(indentacionProximoNivel, derecho, izquierdo, "/");
+
+                pila.Push(izquierdo / derecho);
             }
             DepurarSalida(indentacion, "<TerminoPrima>");
         }
@@ -121,10 +177,12 @@ namespace Compiler.AnalizadorSintactico
             var indentacionProximoNivel = indentacion + "..";
             if (_componenteLexico.Categoria == Categoria.NumeroEntero)
             {
+                pila.Push(Convert.ToDouble(_componenteLexico.Lexema));
                 PedirComponente();
             }
             else if (_componenteLexico.Categoria == Categoria.NumeroDecimal)
             {
+                pila.Push(Convert.ToDouble(_componenteLexico.Lexema));
                 PedirComponente();
             }
             else if (_componenteLexico.Categoria == Categoria.ParentesisAbre)
