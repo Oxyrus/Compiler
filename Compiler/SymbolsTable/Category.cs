@@ -21,6 +21,8 @@
         Asc,
         Desc,
         EndOfFile,
-        Literal
+        Literal,
+        Field,
+        Table
     }
 }
