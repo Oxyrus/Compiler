@@ -797,7 +797,168 @@ namespace Compiler.LexicalAnalyzer
                 #region State 44
                 else if (currentState == 44)
                 {
+                    ReadNextCharacter();
 
+                    if (CurrentCharacterIsGreaterThan())
+                    {
+                        currentState = 60;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 61;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 62;
+                    }
+                }
+                #endregion
+
+                #region State 45
+                else if (currentState == 45)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "r")
+                    {
+                        currentState = 46;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 78;
+                    }
+                }
+                #endregion
+
+                #region State 46
+                else if (currentState == 46)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "d")
+                    {
+                        currentState = 49;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 47;
+                    }
+                }
+                #endregion
+
+                #region State 47 - Return OR
+                else if (currentState == 47)
+                {
+                    MovePointerBackward();
+                    component = LexicalComponent.CreateSymbol(Category.Or, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                #endregion
+
+                #region State 48
+                else if (currentState == 48)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 65;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 82;
+                    }
+                }
+                #endregion
+
+                #region State 49
+                else if (currentState == 49)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "e")
+                    {
+                        currentState = 50;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 79;
+                    }
+                }
+                #endregion
+
+                #region State 50
+                else if (currentState == 50)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "r")
+                    {
+                        currentState = 51;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 79;
+                    }
+                }
+                #endregion
+
+                #region State 51
+                else if (currentState == 51)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter == " ")
+                    {
+                        currentState = 52;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 79;
+                    }
+                }
+                #endregion
+
+                #region State 52
+                else if (currentState == 52)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "b")
+                    {
+                        currentState = 53;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 79;
+                    }
+                }
+                #endregion
+
+                #region State 53
+                else if (currentState == 53)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "y")
+                    {
+                        currentState = 54;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 79;
+                    }
                 }
                 #endregion
 
