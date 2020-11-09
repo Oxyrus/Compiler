@@ -16,8 +16,7 @@ namespace Compiler.SymbolsTable
         {
             _baseReservedKeywords.Add("AND", LexicalComponent.CreateReservedKeyword(Category.And, "AND"));
             _baseReservedKeywords.Add("OR", LexicalComponent.CreateReservedKeyword(Category.Or, "OR"));
-            _baseReservedKeywords.Add("ORDER", LexicalComponent.CreateReservedKeyword(Category.Order, "ORDER"));
-            _baseReservedKeywords.Add("BY", LexicalComponent.CreateReservedKeyword(Category.By, "BY"));
+            _baseReservedKeywords.Add("ORDER BY", LexicalComponent.CreateReservedKeyword(Category.Order_by, "ORDER BY"));
             _baseReservedKeywords.Add("ASC", LexicalComponent.CreateReservedKeyword(Category.Asc, "ASC"));
             _baseReservedKeywords.Add("DESC", LexicalComponent.CreateReservedKeyword(Category.Desc, "DESC"));
             _baseReservedKeywords.Add("FROM", LexicalComponent.CreateReservedKeyword(Category.From, "FROM"));

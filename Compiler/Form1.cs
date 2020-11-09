@@ -45,6 +45,8 @@ namespace Compiler
             var lexicalAnalyzer = new LexicalAnalysis();
             LexicalComponent lexicalComponent = null;
 
+            lexicalAnalyzer.LoadNewLine();
+
             do
             {
                 lexicalComponent = lexicalAnalyzer.BuildComponent();

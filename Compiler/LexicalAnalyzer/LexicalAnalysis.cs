@@ -1,6 +1,7 @@
 ﻿using Compiler.Cache;
 using Compiler.ErrorHandler;
 using Compiler.SymbolsTable;
+using System;
 
 namespace Compiler.LexicalAnalyzer
 {
@@ -12,7 +13,7 @@ namespace Compiler.LexicalAnalyzer
         private string _lexeme = "";
         private Line _currentLine;
 
-        private void LoadNewLine()
+        public void LoadNewLine()
         {
             _currentLineNumber += 1;
             _currentLine = Cache.Cache.GetLine(_currentLineNumber);
@@ -165,14 +166,6 @@ namespace Compiler.LexicalAnalyzer
                         currentState = 45;
                         Concatenate();
                     }
-                    // REVISAR EL MANEJO DE LOS PUNTOS
-                    /*
-                    else if (CurrentCharacterIsDot())
-                    {
-                        currentState = 84;
-                        Concatenate();
-                    }
-                    */
                     else if (CurrentCharacterIsComma())
                     {
                         currentState = 84;
@@ -263,7 +256,7 @@ namespace Compiler.LexicalAnalyzer
                 #endregion
 
                 #region State 5
-                if (currentState == 5)
+                else if (currentState == 5)
                 {
                     ReadNextCharacter();
 
@@ -962,7 +955,276 @@ namespace Compiler.LexicalAnalyzer
                 }
                 #endregion
 
-                #region State 83 - Return Decimal
+                else if (currentState == 54)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.Order_by, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+
+                else if (currentState == 57)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsDigit())
+                    {
+                        currentState = 57;
+                        Concatenate();
+                    }
+                    else if (_currentCharacter == ".")
+                    {
+                        currentState = 66;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 58;
+                    }
+                }
+                else if (currentState == 58)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.Integer, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+
+                else if (currentState == 60)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 61)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.LessThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 62)
+                {
+                    MovePointerBackward();
+                    component = LexicalComponent.CreateSymbol(Category.LessThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 63)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.GreaterThanOrEqualTo, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 64)
+                {
+                    MovePointerBackward();
+                    component = LexicalComponent.CreateSymbol(Category.GreaterThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 65)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 66)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsDigit())
+                    {
+                        currentState = 67;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 83;
+                    }
+                }
+                else if (currentState == 67)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsDigit())
+                    {
+                        currentState = 67;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 68;
+                    }
+                }
+
+                else if (currentState == 68)
+                {
+                    MovePointerBackward();
+                    component = LexicalComponent.CreateSymbol(Category.Decimal, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 69)
+                {
+                    LoadNewLine();
+                    currentState = 0;
+                }
+                else if (currentState == 70)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.EndOfFile, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 72)
+                {
+                    component = LexicalComponent.CreateDummy(Category.Select, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid Select", "Invalid Select ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 73)
+                {
+                    component = LexicalComponent.CreateDummy(Category.From, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid From", "Invalid From ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 74)
+                {
+                    component = LexicalComponent.CreateDummy(Category.Where, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid Where", "Invalid Where ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 75)
+                {
+                    var error = Error.CreateLexicalError(
+                       _lexeme,
+                       _currentLineNumber,
+                       _pointer - _lexeme.Length,
+                       _pointer - 1,
+                       "Error lexical", "Invalid symbol entered ", "Make sure the symbols entered are valid");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new Exception("Se ha presentado un error léxico que tiene el proceso, por favor validar la consola de errores");
+                }
+                else if (currentState == 76)
+                {
+                    component = LexicalComponent.CreateDummy(Category.Asc, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid Asc", "Invalid Asc ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 77)
+                {
+                    component = LexicalComponent.CreateDummy(Category.Desc, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid Desc", "Invalid Desc ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 78)
+                {
+                    var error = Error.CreateLexicalError(
+                       _lexeme,
+                       _currentLineNumber,
+                       _pointer - _lexeme.Length,
+                       _pointer - 1,
+                       "Error lexical", "Invalid symbol entered ", "Make sure the symbols entered are valid");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new Exception("Se ha presentado un error léxico que tiene el proceso, por favor validar la consola de errores");
+                }
+                else if (currentState == 79)
+                {
+                    component = LexicalComponent.CreateDummy(Category.Order_by, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid ORDER BY", "Invalid ORDER BY ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 80)
+                {
+                    component = LexicalComponent.CreateDummy(Category.Table, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid table", "Invalid table ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 81)
+                {
+                    component = LexicalComponent.CreateDummy(Category.Field, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid field", "Invalid field ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 82)
+                {
+                    component = LexicalComponent.CreateDummy(Category.DifferentThan, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Invalid diferent than", "Invalid different than ", "Use a dot");
+
+                    MasterTable.Add(component);
+                    ErrorHandler.ErrorHandler.Report(error);
+                    continueAnalysis = false;
+                }
                 else if (currentState == 83)
                 {
                     component = LexicalComponent.CreateDummy(Category.Decimal, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
@@ -977,7 +1239,16 @@ namespace Compiler.LexicalAnalyzer
                     ErrorHandler.ErrorHandler.Report(error);
                     continueAnalysis = false;
                 }
-                #endregion
+                else if (currentState == 84)
+                {
+                    component = LexicalComponent.CreateSymbol(Category.Separator, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
+                    MasterTable.Add(component);
+                    continueAnalysis = false;
+                }
+                else
+                {
+                    throw new Exception("Programa invalido");
+                }
             }
 
             return component;

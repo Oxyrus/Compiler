@@ -14,8 +14,7 @@
         Select,
         From,
         Where,
-        Order,
-        By,
+        Order_by,
         And,
         Or,
         Asc,
@@ -23,6 +22,7 @@
         EndOfFile,
         Literal,
         Field,
-        Table
+        Table,
+        Separator
     }
 }
