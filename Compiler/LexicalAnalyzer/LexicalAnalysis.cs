@@ -110,6 +110,16 @@ namespace Compiler.LexicalAnalyzer
                         currentState = 9;
                         Concatenate();
                     }
+                    else if (CurrentCharacterIsGreaterThan())
+                    {
+                        currentState = 12;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsLessThan())
+                    {
+                        currentState = 15;
+                        Concatenate();
+                    }
                     else if (CurrentCharacterIsEndOfLine())
                     {
                         currentState = 23;
@@ -202,6 +212,64 @@ namespace Compiler.LexicalAnalyzer
                 else if (currentState == 11)
                 {
                     component = GenerateComponentWithoutMovingPointer(Category.Literal);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 12)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 13;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 14;
+                    }
+                }
+                else if (currentState == 13)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.GreaterThanOrEqualTo);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 14)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.GreaterThan);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 15)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsGreaterThan())
+                    {
+                        currentState = 16;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 17;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 18;
+                    }
+                }
+                else if (currentState == 16)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.DifferentThan);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 17)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.LessThanOrEqualTo);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 18)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.LessThan);
                     continueAnalysis = false;
                 }
                 else if (currentState == 23)
