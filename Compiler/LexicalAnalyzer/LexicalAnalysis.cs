@@ -77,8 +77,6 @@ namespace Compiler.LexicalAnalyzer
 
         private bool CurrentCharacterIsUnderscore() => "_" == _currentCharacter;
 
-        private bool CurrentCharacterIsDollarSign() => "$" == _currentCharacter;
-
         private bool CurrentCharacterIsSinglequote() => "'" == _currentCharacter;
 
         private void Concatenate() => _lexeme += _currentCharacter;
@@ -130,6 +128,26 @@ namespace Compiler.LexicalAnalyzer
                         currentState = 22;
                         Concatenate();
                     }
+                    else if (_currentCharacter.ToLower() == "t")
+                    {
+                        currentState = 26;
+                        Concatenate();
+                    }
+                    else if (_currentCharacter.ToLower() == "c")
+                    {
+                        currentState = 33;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsLetter() && _currentCharacter != "t" && _currentCharacter != "c")
+                    {
+                        currentState = 1;
+                        Concatenate();
+                    }
+                    else if (CurrentCharacterIsComma())
+                    {
+                        currentState = 40;
+                        Concatenate();
+                    }
                     else if (CurrentCharacterIsEndOfLine())
                     {
                         currentState = 23;
@@ -142,6 +160,25 @@ namespace Compiler.LexicalAnalyzer
                     {
                         currentState = 25;
                     }
+                }
+                else if (currentState == 1)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsLetter())
+                    {
+                        currentState = 1;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 2;
+                    }
+                }
+                else if (currentState == 2)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.Identifier);
+                    continueAnalysis = false;
                 }
                 else if (currentState == 3)
                 {
@@ -324,6 +361,173 @@ namespace Compiler.LexicalAnalyzer
                 {
                     throw new Exception() ;
                 }
+                else if (currentState == 26)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "a")
+                    {
+                        currentState = 27;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 32;
+                    }
+                }
+                else if (currentState == 27)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "b")
+                    {
+                        currentState = 28;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 32;
+                    }
+                }
+                else if (currentState == 28)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsUnderscore())
+                    {
+                        currentState = 29;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 32;
+                    }
+                }
+                else if (currentState == 29)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsLetterOrDigit() || CurrentCharacterIsUnderscore())
+                    {
+                        currentState = 30;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 32;
+                    }
+                }
+                else if (currentState == 30)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsLetterOrDigit() || CurrentCharacterIsUnderscore())
+                    {
+                        currentState = 30;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 31;
+                    }
+                }
+                else if (currentState == 31)
+                {
+                    component = GenerateComponent(Category.Table);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 32)
+                {
+                    throw new Exception("TABLA NO VALIDA");
+                }
+                else if (currentState == 33)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "a")
+                    {
+                        currentState = 34;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 39;
+                    }
+                }
+                else if (currentState == 34)
+                {
+                    ReadNextCharacter();
+
+                    if (_currentCharacter.ToLower() == "m")
+                    {
+                        currentState = 35;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 39;
+                    }
+                }
+                else if (currentState == 35)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsUnderscore())
+                    {
+                        currentState = 36;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 39;
+                    }
+                }
+                else if (currentState == 36)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsLetterOrDigit() || CurrentCharacterIsUnderscore())
+                    {
+                        currentState = 37;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 39;
+                    }
+                }
+                else if (currentState == 37)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsLetterOrDigit() || CurrentCharacterIsUnderscore())
+                    {
+                        currentState = 37;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 38;
+                    }
+                }
+                else if (currentState == 38)
+                {
+                    component = GenerateComponent(Category.Field);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 39)
+                {
+                    throw new Exception("Campo no valido");
+                }
+                else if (currentState == 40)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.Separator);
+                    continueAnalysis = false;
+                }
+                else
+                {
+                    throw new Exception("Símbolo no válido para el compilador");
+                }
             }
 
             return component;
@@ -331,9 +535,9 @@ namespace Compiler.LexicalAnalyzer
 
         private LexicalComponent GenerateComponent(Category category)
         {
+            MovePointerBackward();
             var component = LexicalComponent.CreateSymbol(category, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
             MasterTable.Add(component);
-            MovePointerBackward();
             return component;
         }
 
