@@ -105,6 +105,11 @@ namespace Compiler.LexicalAnalyzer
                         currentState = 3;
                         Concatenate();
                     }
+                    else if (CurrentCharacterIsSinglequote())
+                    {
+                        currentState = 9;
+                        Concatenate();
+                    }
                     else if (CurrentCharacterIsEndOfLine())
                     {
                         currentState = 23;
@@ -178,6 +183,26 @@ namespace Compiler.LexicalAnalyzer
                 else if (currentState == 8)
                 {
                     throw new Exception("Número decimal invalido");
+                }
+                else if (currentState == 9)
+                {
+                    ReadNextCharacter();
+
+                    if (!CurrentCharacterIsSinglequote())
+                    {
+                        currentState = 9;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        currentState = 11;
+                        Concatenate();
+                    }
+                }
+                else if (currentState == 11)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.Literal);
+                    continueAnalysis = false;
                 }
                 else if (currentState == 23)
                 {
