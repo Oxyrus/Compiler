@@ -239,7 +239,18 @@ namespace Compiler.LexicalAnalyzer
                 }
                 else if (currentState == 8)
                 {
-                    throw new Exception("Número decimal invalido");
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Símbolo no válido",
+                        "Esparaba la construcción de un número decimal",
+                        "Asegúrese de añadir un número después del punto, ej. 4.5");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new InvalidOperationException("Se presento un error léxico que impide la compilación del programa, revise la consola de errores");
                 }
                 else if (currentState == 9)
                 {
@@ -340,7 +351,18 @@ namespace Compiler.LexicalAnalyzer
                 }
                 else if (currentState == 21)
                 {
-                    throw new Exception("!= invalido");
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Símbolo no válido",
+                        "Esparaba la construcción de un diferente que",
+                        "Asegúrese de añadir un igual que después del símbolo de exclamación, ej. !=");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new InvalidOperationException("Se presento un error léxico que impide la compilación del programa, revise la consola de errores");
                 }
                 else if (currentState == 22)
                 {
@@ -359,7 +381,18 @@ namespace Compiler.LexicalAnalyzer
                 }
                 else if (currentState == 25)
                 {
-                    throw new Exception() ;
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Símbolo no válido",
+                        "El símbolo no es válido en el lenguaje",
+                        "Asegúrese de utilizar símbolos que son reconocidos por el lenguaje");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new InvalidOperationException("Se presento un error léxico que impide la compilación del programa, revise la consola de errores");
                 }
                 else if (currentState == 26)
                 {
@@ -438,7 +471,18 @@ namespace Compiler.LexicalAnalyzer
                 }
                 else if (currentState == 32)
                 {
-                    throw new Exception("TABLA NO VALIDA");
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Símbolo no válido",
+                        "El nombre de tabla no es válido",
+                        "Asegúrese de seguir la estructura TAB_<nombre>");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new InvalidOperationException("Se presento un error léxico que impide la compilación del programa, revise la consola de errores");
                 }
                 else if (currentState == 33)
                 {
@@ -517,7 +561,18 @@ namespace Compiler.LexicalAnalyzer
                 }
                 else if (currentState == 39)
                 {
-                    throw new Exception("Campo no valido");
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Símbolo no válido",
+                        "El nombre de campo no es válido",
+                        "Asegúrese de seguir la estructura CAM_<nombre>");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new InvalidOperationException("Se presento un error léxico que impide la compilación del programa, revise la consola de errores");
                 }
                 else if (currentState == 40)
                 {
@@ -526,7 +581,18 @@ namespace Compiler.LexicalAnalyzer
                 }
                 else
                 {
-                    throw new Exception("Símbolo no válido para el compilador");
+                    var error = Error.CreateLexicalError(
+                        _lexeme,
+                        _currentLineNumber,
+                        _pointer - _lexeme.Length,
+                        _pointer - 1,
+                        "Símbolo no válido",
+                        "Leí " + _lexeme + " el cual no es válido para el lenguaje",
+                        "Asegúrese de utilizar símbolos válidos para el lenguaje");
+
+                    ErrorHandler.ErrorHandler.Report(error);
+
+                    throw new InvalidOperationException("El símbolo no es válido en el lenguaje.");
                 }
             }
 
