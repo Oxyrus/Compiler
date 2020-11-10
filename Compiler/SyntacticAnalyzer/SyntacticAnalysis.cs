@@ -1,5 +1,7 @@
-﻿using Compiler.LexicalAnalyzer;
+﻿using Compiler.ErrorHandler;
+using Compiler.LexicalAnalyzer;
 using Compiler.SymbolsTable;
+using System;
 using System.Windows.Forms;
 
 namespace Compiler.SyntacticAnalyzer
@@ -48,7 +50,194 @@ namespace Compiler.SyntacticAnalyzer
             DebugInput(nextLevelIndentation, "<Expression>");
 
         }
+        //<QUERY> := <SELECTOR><COMPARADOR><ORDENACION>
 
+        public void Query(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            Selector(identatioNextLevel);
+            Comparator(identatioNextLevel);
+            ordination(identatioNextLevel);
+        }
+        private void Selector(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.Select)
+            {
+                GetComponent();
+                Fields(identatioNextLevel);
+                if (_lexicalComponent.Category == Category.From)
+                {
+                    GetComponent();
+                    Table(identatioNextLevel);
+                }
+                else
+                {
+                    var error = Error.CreateSemanticError(
+                       _lexicalComponent.Lexeme,
+                       _lexicalComponent.LineNumber,
+                       _lexicalComponent.InitialPosition,
+                       _lexicalComponent.FinalPosition,
+                       "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                    ErrorHandler.ErrorHandler.Report(error);
+                }
+            }
+            else
+            {
+                var error = Error.CreateSemanticError(
+                   _lexicalComponent.Lexeme,
+                   _lexicalComponent.LineNumber,
+                   _lexicalComponent.InitialPosition,
+                   _lexicalComponent.FinalPosition,
+                   "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
+            }
+
+        }
+
+        private void Fields(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.Field)
+            {
+                GetComponent();
+                if(_lexicalComponent.Category == Category.Separator)
+                {
+                    Fields(identatioNextLevel);
+                }        
+
+            }
+
+        }
+
+        private void Table(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.Table)
+            {
+                GetComponent();
+                if (_lexicalComponent.Category == Category.Separator)
+                {
+                    Table(identatioNextLevel);
+                }
+
+            }
+
+        }
+
+        private void Comparator(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+       
+            if (_lexicalComponent.Category == Category.Where)
+            {
+                GetComponent();
+                Conditions(identatioNextLevel);
+
+            }
+        }
+
+        private void Conditions(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            Operating(identatioNextLevel);
+            Operator(identatioNextLevel);
+            Operating(identatioNextLevel);
+            Validator(identatioNextLevel);
+        }
+        private void Operating(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.Field)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.Literal)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.Integer || _lexicalComponent.Category == Category.Decimal)
+            {
+                GetComponent();
+
+            }
+            else
+            {
+                var error = Error.CreateSemanticError(
+                  _lexicalComponent.Lexeme,
+                  _lexicalComponent.LineNumber,
+                  _lexicalComponent.InitialPosition,
+                  _lexicalComponent.FinalPosition,
+                  "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
+            }
+        }
+        private void Operator(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.GreaterThan)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.LessThan)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.EqualTo)
+            {
+                GetComponent();
+
+            }
+            else if (_lexicalComponent.Category == Category.GreaterThanOrEqualTo)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.LessThanOrEqualTo )
+            {
+                GetComponent();
+
+            }
+            else if (_lexicalComponent.Category == Category.DifferentThan)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.DifferentThan )
+            {
+                GetComponent();
+
+            }
+            else
+            {
+                var error = Error.CreateSemanticError(
+                  _lexicalComponent.Lexeme,
+                  _lexicalComponent.LineNumber,
+                  _lexicalComponent.InitialPosition,
+                  _lexicalComponent.FinalPosition,
+                  "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
+            }
+        }
+        private void Validator(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.DifferentThan)
+            {
+
+            }
+        }
+
+       
+
+       
+
+        private void ordination(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+        }
+
+       
+
+        
         /*
         private void Digit(string indentation)
         {
