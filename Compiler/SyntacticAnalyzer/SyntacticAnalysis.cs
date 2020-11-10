@@ -220,19 +220,48 @@ namespace Compiler.SyntacticAnalyzer
         private void Validator(string identation)
         {
             var identatioNextLevel = identation + "..";
-            if (_lexicalComponent.Category == Category.DifferentThan)
+            if (_lexicalComponent.Category == Category.And|| _lexicalComponent.Category == Category.Or)
             {
-
+                Conector(identatioNextLevel);
+                Conditions(identatioNextLevel);
             }
         }
 
-       
+        private void Conector(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.And)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.Or)
+            {
+                GetComponent();
+            }
+            else
+            {
+                var error = Error.CreateSemanticError(
+                 _lexicalComponent.Lexeme,
+                 _lexicalComponent.LineNumber,
+                 _lexicalComponent.InitialPosition,
+                 _lexicalComponent.FinalPosition,
+                 "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
+            }
 
-       
+        }
 
         private void ordination(string identation)
         {
             var identatioNextLevel = identation + "..";
+
+            if (_lexicalComponent.Category == Category.Order_by)
+            {
+                GetComponent();
+                Criteria(identatioNextLevel);
+
+            }
+
         }
 
        
