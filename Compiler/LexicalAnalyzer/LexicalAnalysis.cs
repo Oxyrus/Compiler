@@ -120,6 +120,11 @@ namespace Compiler.LexicalAnalyzer
                         currentState = 15;
                         Concatenate();
                     }
+                    else if (CurrentCharacterIsExclamationMark())
+                    {
+                        currentState = 19;
+                        Concatenate();
+                    }
                     else if (CurrentCharacterIsEndOfLine())
                     {
                         currentState = 23;
@@ -270,6 +275,25 @@ namespace Compiler.LexicalAnalyzer
                 else if (currentState == 18)
                 {
                     component = GenerateComponentWithoutMovingPointer(Category.LessThan);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 19)
+                {
+                    ReadNextCharacter();
+
+                    if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 20;
+                        Concatenate();
+                    }
+                    else
+                    {
+                        throw new Exception("!= INVALIDO");
+                    }
+                }
+                else if (currentState == 20)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.DifferentThan);
                     continueAnalysis = false;
                 }
                 else if (currentState == 23)
