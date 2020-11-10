@@ -125,6 +125,11 @@ namespace Compiler.LexicalAnalyzer
                         currentState = 19;
                         Concatenate();
                     }
+                    else if (CurrentCharacterIsEqual())
+                    {
+                        currentState = 22;
+                        Concatenate();
+                    }
                     else if (CurrentCharacterIsEndOfLine())
                     {
                         currentState = 23;
@@ -288,12 +293,21 @@ namespace Compiler.LexicalAnalyzer
                     }
                     else
                     {
-                        throw new Exception("!= INVALIDO");
+                        currentState = 21;
                     }
                 }
                 else if (currentState == 20)
                 {
                     component = GenerateComponentWithoutMovingPointer(Category.DifferentThan);
+                    continueAnalysis = false;
+                }
+                else if (currentState == 21)
+                {
+                    throw new Exception("!= invalido");
+                }
+                else if (currentState == 22)
+                {
+                    component = GenerateComponentWithoutMovingPointer(Category.EqualTo);
                     continueAnalysis = false;
                 }
                 else if (currentState == 23)
