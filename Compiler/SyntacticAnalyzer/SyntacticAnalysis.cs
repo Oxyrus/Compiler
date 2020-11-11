@@ -54,13 +54,17 @@ namespace Compiler.SyntacticAnalyzer
 
         public void Query(string identation)
         {
+           
             var identatioNextLevel = identation + "..";
+            DebugInput(identatioNextLevel, "<Query>");
             Selector(identatioNextLevel);
             Comparator(identatioNextLevel);
             ordination(identatioNextLevel);
+            DebugOutput(identatioNextLevel, "<Query>");
         }
         private void Selector(string identation)
         {
+            DebugInput(identation, "<Selector>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.Select)
             {
@@ -93,10 +97,13 @@ namespace Compiler.SyntacticAnalyzer
                 ErrorHandler.ErrorHandler.Report(error);
             }
 
+            DebugOutput(identation, "<Selector>");
+
         }
 
         private void Fields(string identation)
         {
+            DebugInput(identation, "<Fields>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.Field)
             {
@@ -118,11 +125,13 @@ namespace Compiler.SyntacticAnalyzer
                "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(identation, "<Fields>");
 
         }
 
         private void Table(string identation)
         {
+            DebugInput(identation, "<Table>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.Table)
             {
@@ -144,11 +153,13 @@ namespace Compiler.SyntacticAnalyzer
                "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(identation, "<Table>");
 
         }
 
         private void Comparator(string identation)
         {
+            DebugInput(identation, "<Comparator>");
             var identatioNextLevel = identation + "..";
        
             if (_lexicalComponent.Category == Category.Where)
@@ -157,18 +168,22 @@ namespace Compiler.SyntacticAnalyzer
                 Conditions(identatioNextLevel);
 
             }
+            DebugOutput(identation, "<Comparator>");
         }
 
         private void Conditions(string identation)
         {
+            DebugInput(identation, "<Conditions>");
             var identatioNextLevel = identation + "..";
             Operating(identatioNextLevel);
             Operator(identatioNextLevel);
             Operating(identatioNextLevel);
             Validator(identatioNextLevel);
+            DebugOutput(identation, "<Conditions>");
         }
         private void Operating(string identation)
         {
+            DebugInput(identation, "<Operating>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.Field)
             {
@@ -193,9 +208,11 @@ namespace Compiler.SyntacticAnalyzer
                   "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(identation, "<Operating>");
         }
         private void Operator(string identation)
         {
+            DebugInput(identation, "<Operator>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.GreaterThan)
             {
@@ -238,19 +255,23 @@ namespace Compiler.SyntacticAnalyzer
                   "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(identation, "<Operator>");
         }
         private void Validator(string identation)
         {
+            DebugInput(identation, "<Validator>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.And || _lexicalComponent.Category == Category.Or)
             {
                 Conector(identatioNextLevel);
                 Conditions(identatioNextLevel);
             }
+            DebugOutput(identation, "<Validator>");
         }
 
         private void Conector(string identation)
         {
+            DebugInput(identation, "<Conector>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.And)
             {
@@ -270,11 +291,13 @@ namespace Compiler.SyntacticAnalyzer
                  "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(identation, "<Conector>");
 
         }
 
         private void ordination(string identation)
         {
+            DebugInput(identation, "<ordination>");
             var identatioNextLevel = identation + "..";
 
             if (_lexicalComponent.Category == Category.Order_by)
@@ -283,11 +306,13 @@ namespace Compiler.SyntacticAnalyzer
                 Criteria(identatioNextLevel);
 
             }
+            DebugOutput(identation, "<ordination>");
 
         }
 
         private void Criteria(string identation)
         {
+            DebugInput(identation, "<Criteria>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.Field)
             {
@@ -308,9 +333,11 @@ namespace Compiler.SyntacticAnalyzer
                "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(identation, "<Criteria>");
         }
         private void Indices(string identation)
         {
+            DebugInput(identation, "<Indices>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.Integer)
             {
@@ -332,11 +359,13 @@ namespace Compiler.SyntacticAnalyzer
                "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(identation, "<Indices>");
 
         }
 
         private void Criterion(string identation)
         {
+            DebugInput(identation, "<Criterion>");
             var identatioNextLevel = identation + "..";
             if (_lexicalComponent.Category == Category.Asc)
             {
@@ -346,6 +375,7 @@ namespace Compiler.SyntacticAnalyzer
             {
                 GetComponent();
             }
+            DebugOutput(identation, "<Criterion>");
         }
 
 
