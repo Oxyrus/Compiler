@@ -103,9 +103,20 @@ namespace Compiler.SyntacticAnalyzer
                 GetComponent();
                 if(_lexicalComponent.Category == Category.Separator)
                 {
+                    GetComponent();
                     Fields(identatioNextLevel);
                 }        
 
+            }
+            else
+            {
+                var error = Error.CreateSemanticError(
+               _lexicalComponent.Lexeme,
+               _lexicalComponent.LineNumber,
+               _lexicalComponent.InitialPosition,
+               _lexicalComponent.FinalPosition,
+               "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
             }
 
         }
@@ -118,9 +129,20 @@ namespace Compiler.SyntacticAnalyzer
                 GetComponent();
                 if (_lexicalComponent.Category == Category.Separator)
                 {
+                    GetComponent();
                     Table(identatioNextLevel);
                 }
 
+            }
+            else
+            {
+                var error = Error.CreateSemanticError(
+               _lexicalComponent.Lexeme,
+               _lexicalComponent.LineNumber,
+               _lexicalComponent.InitialPosition,
+               _lexicalComponent.FinalPosition,
+               "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
             }
 
         }
@@ -220,7 +242,7 @@ namespace Compiler.SyntacticAnalyzer
         private void Validator(string identation)
         {
             var identatioNextLevel = identation + "..";
-            if (_lexicalComponent.Category == Category.And|| _lexicalComponent.Category == Category.Or)
+            if (_lexicalComponent.Category == Category.And || _lexicalComponent.Category == Category.Or)
             {
                 Conector(identatioNextLevel);
                 Conditions(identatioNextLevel);
@@ -264,9 +286,71 @@ namespace Compiler.SyntacticAnalyzer
 
         }
 
-       
+        private void Criteria(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.Field)
+            {
+                Fields(identatioNextLevel);
+                Criterion(identatioNextLevel);
 
-        
+            }else if(_lexicalComponent.Category == Category.Integer)
+            {
+                Indices(identatioNextLevel);
+                Criterion(identatioNextLevel);
+            }else
+            {
+                 var error = Error.CreateSemanticError(
+               _lexicalComponent.Lexeme,
+               _lexicalComponent.LineNumber,
+               _lexicalComponent.InitialPosition,
+               _lexicalComponent.FinalPosition,
+               "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
+            }
+        }
+        private void Indices(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.Integer)
+            {
+                GetComponent();
+                if (_lexicalComponent.Category == Category.Separator)
+                {
+                    GetComponent();
+                    Indices(identatioNextLevel);
+                }
+
+            }
+            else
+            {
+                var error = Error.CreateSemanticError(
+               _lexicalComponent.Lexeme,
+               _lexicalComponent.LineNumber,
+               _lexicalComponent.InitialPosition,
+               _lexicalComponent.FinalPosition,
+               "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                ErrorHandler.ErrorHandler.Report(error);
+            }
+
+        }
+
+        private void Criterion(string identation)
+        {
+            var identatioNextLevel = identation + "..";
+            if (_lexicalComponent.Category == Category.Asc)
+            {
+                GetComponent();
+            }
+            else if (_lexicalComponent.Category == Category.Desc)
+            {
+                GetComponent();
+            }
+        }
+
+
+
+
         /*
         private void Digit(string indentation)
         {
