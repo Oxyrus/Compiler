@@ -16,6 +16,25 @@ namespace Compiler.SyntacticAnalyzer
         {
             _debugEnabled = debug;
             _callStack = string.Empty;
+
+            _lexicalAnalysis.LoadNewLine();
+            GetComponent();
+
+            Expression("..");
+            Query("..");
+
+            if (ErrorHandler.ErrorHandler.HasErrors())
+            {
+                MessageBox.Show("Hay errores de compilación");
+            }
+            else if (_lexicalComponent.Category == Category.EndOfFile)
+            {
+                MessageBox.Show("El programa compilo de forma satisfactoria");
+            }
+            else
+            {
+                MessageBox.Show("Aunque el programa compilo de manera satisfactoria, faltaron componentes por evaluar");
+            }
         }
 
         private void GetComponent()
@@ -47,17 +66,17 @@ namespace Compiler.SyntacticAnalyzer
         {
             var nextLevelIndentation = indentation + "..";
             DebugInput(nextLevelIndentation, "<Expression>");
-
         }
-        //<QUERY> := <SELECTOR><COMPARADOR><ORDENACION>
 
+        //<QUERY> := <SELECTOR><COMPARADOR><ORDENACION>
         public void Query(string identation)
         {
             var identatioNextLevel = identation + "..";
             Selector(identatioNextLevel);
             Comparator(identatioNextLevel);
-            ordination(identatioNextLevel);
+            Ordination(identatioNextLevel);
         }
+
         private void Selector(string identation)
         {
             var identatioNextLevel = identation + "..";
@@ -91,7 +110,6 @@ namespace Compiler.SyntacticAnalyzer
                    "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
-
         }
 
         private void Fields(string identation)
@@ -166,6 +184,7 @@ namespace Compiler.SyntacticAnalyzer
             Operating(identatioNextLevel);
             Validator(identatioNextLevel);
         }
+
         private void Operating(string identation)
         {
             var identatioNextLevel = identation + "..";
@@ -180,7 +199,6 @@ namespace Compiler.SyntacticAnalyzer
             else if (_lexicalComponent.Category == Category.Integer || _lexicalComponent.Category == Category.Decimal)
             {
                 GetComponent();
-
             }
             else
             {
@@ -271,15 +289,28 @@ namespace Compiler.SyntacticAnalyzer
             }
         }
 
-        private void ordination(string identation)
+        private void Ordination(string identation)
         {
             var identatioNextLevel = identation + "..";
 
-            if (_lexicalComponent.Category == Category.Order_by)
+            if (_lexicalComponent.Category == Category.Order)
             {
                 GetComponent();
-                Criteria(identatioNextLevel);
-
+                if (_lexicalComponent.Category == Category.By)
+                {
+                    GetComponent();
+                    Criteria(identatioNextLevel);
+                }
+                else
+                {
+                    var error = Error.CreateSemanticError(
+                     _lexicalComponent.Lexeme,
+                     _lexicalComponent.LineNumber,
+                     _lexicalComponent.InitialPosition,
+                     _lexicalComponent.FinalPosition,
+                     "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                    ErrorHandler.ErrorHandler.Report(error);
+                }
             }
         }
 

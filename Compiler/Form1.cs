@@ -1,5 +1,6 @@
 ﻿using Compiler.LexicalAnalyzer;
 using Compiler.SymbolsTable;
+using Compiler.SyntacticAnalyzer;
 using System;
 using System.IO;
 using System.Security;
@@ -42,6 +43,11 @@ namespace Compiler
                 Cache.Cache.Populate(line);
             }
 
+            var syntacticAnalyzer = new SyntacticAnalysis();
+
+            syntacticAnalyzer.Analyze(true);
+
+            /*
             var lexicalAnalyzer = new LexicalAnalysis();
             LexicalComponent lexicalComponent = null;
 
@@ -52,6 +58,7 @@ namespace Compiler
                 lexicalComponent = lexicalAnalyzer.BuildComponent();
                 MessageBox.Show(lexicalComponent.ToString());
             } while (!lexicalComponent.Category.Equals(Category.EndOfFile));
+            */
 
             MessageBox.Show("Ejecución finalizada");
         }

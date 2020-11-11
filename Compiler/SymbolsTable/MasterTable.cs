@@ -5,7 +5,7 @@ namespace Compiler.SymbolsTable
 {
     public class MasterTable
     {
-        public static void Add(LexicalComponent component)
+        public static LexicalComponent Add(LexicalComponent component)
         {
             if (component != null)
             {
@@ -28,7 +28,11 @@ namespace Compiler.SymbolsTable
                     default:
                         throw new Exception("Unsupported lexical component type");
                 }
+
+                return component;
             }
+
+            throw new ArgumentNullException(nameof(component));
         }
 
         public static List<LexicalComponent> ObtainComponent(ComponentType componentType)

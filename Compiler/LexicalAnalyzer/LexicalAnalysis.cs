@@ -603,15 +603,13 @@ namespace Compiler.LexicalAnalyzer
         {
             MovePointerBackward();
             var component = LexicalComponent.CreateSymbol(category, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-            MasterTable.Add(component);
-            return component;
+            return MasterTable.Add(component);
         }
 
         private LexicalComponent GenerateComponentWithoutMovingPointer(Category category)
         {
             var component = LexicalComponent.CreateSymbol(category, _lexeme, _currentLineNumber, _pointer - _lexeme.Length, _pointer - 1);
-            MasterTable.Add(component);
-            return component;
+            return MasterTable.Add(component);
         }
 
         private void ResetPointer() => _pointer = 1;
