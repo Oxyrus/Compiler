@@ -29,6 +29,7 @@ namespace Compiler
         {
             MasterTable.Clear();
             Cache.Cache.Clear();
+            ErrorHandler.ErrorHandler.Clear();
 
             if (optionsTabControl.SelectedTab == editorTab)
             {
@@ -48,7 +49,7 @@ namespace Compiler
 
             var syntacticAnalyzer = new SyntacticAnalysis();
 
-            syntacticAnalyzer.Analyze(false);
+            syntacticAnalyzer.Analyze();
 
             ConfigureSymbolsTable();
             ConfigureReservedWordsTable();
