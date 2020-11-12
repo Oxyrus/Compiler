@@ -100,7 +100,7 @@ namespace Compiler.SyntacticAnalyzer
                        _lexicalComponent.LineNumber,
                        _lexicalComponent.InitialPosition,
                        _lexicalComponent.FinalPosition,
-                       "I read " + _lexicalComponent.Lexeme, "From not found", "Correct");
+                       "Leí " + _lexicalComponent.Lexeme, "FROM faltante", "Luego de un selector, se debe especificar mediante un FROM de que tablas se desean traer los datos");
                     ErrorHandler.ErrorHandler.Report(error);
                 }
             }
@@ -111,7 +111,7 @@ namespace Compiler.SyntacticAnalyzer
                    _lexicalComponent.LineNumber,
                    _lexicalComponent.InitialPosition,
                    _lexicalComponent.FinalPosition,
-                   "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                   "Leí " + _lexicalComponent.Lexeme, "SELECT faltante", "Debe iniciar la consulta con un SELECT");
                 ErrorHandler.ErrorHandler.Report(error);
             }
             DebugOutput(indentationNextLevel, "<Selector>");
@@ -142,11 +142,11 @@ namespace Compiler.SyntacticAnalyzer
             else
             {
                 var error = Error.CreateSemanticError(
-               _lexicalComponent.Lexeme,
-               _lexicalComponent.LineNumber,
-               _lexicalComponent.InitialPosition,
-               _lexicalComponent.FinalPosition,
-               "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                   _lexicalComponent.Lexeme,
+                   _lexicalComponent.LineNumber,
+                   _lexicalComponent.InitialPosition,
+                   _lexicalComponent.FinalPosition,
+                   "Leí " + _lexicalComponent.Lexeme, "CAMPO faltante", "Hace falta declarar un campo");
                 ErrorHandler.ErrorHandler.Report(error);
             }
             DebugOutput(indentationNextLevel, "<Fields>");
@@ -168,11 +168,11 @@ namespace Compiler.SyntacticAnalyzer
             else
             {
                 var error = Error.CreateSemanticError(
-               _lexicalComponent.Lexeme,
-               _lexicalComponent.LineNumber,
-               _lexicalComponent.InitialPosition,
-               _lexicalComponent.FinalPosition,
-               "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                   _lexicalComponent.Lexeme,
+                   _lexicalComponent.LineNumber,
+                   _lexicalComponent.InitialPosition,
+                   _lexicalComponent.FinalPosition,
+                   "Leí " + _lexicalComponent.Lexeme, "TABLA faltante", "Hace falta declarar una tabla");
                 ErrorHandler.ErrorHandler.Report(error);
             }
             DebugOutput(indentationNextLevel, "<Table>");
@@ -226,7 +226,7 @@ namespace Compiler.SyntacticAnalyzer
                   _lexicalComponent.LineNumber,
                   _lexicalComponent.InitialPosition,
                   _lexicalComponent.FinalPosition,
-                  "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                  "Leí " + _lexicalComponent.Lexeme, "Error de operación", "Utilice un campo, literal o número");
                 ErrorHandler.ErrorHandler.Report(error);
             }
             DebugOutput(indentationNextLevel, "<Operating>");
@@ -243,7 +243,6 @@ namespace Compiler.SyntacticAnalyzer
                 case Category.EqualTo:
                 case Category.GreaterThanOrEqualTo:
                 case Category.LessThanOrEqualTo:
-                // Por aqui elimine un different than duplicado xd
                 case Category.DifferentThan:
                     GetComponent();
                     break;
@@ -254,7 +253,7 @@ namespace Compiler.SyntacticAnalyzer
                         _lexicalComponent.LineNumber,
                         _lexicalComponent.InitialPosition,
                         _lexicalComponent.FinalPosition,
-                        "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                        "Leí " + _lexicalComponent.Lexeme, "Operador incorrecto", "Utilice uno de los operadores válidos del lenguaje");
                     ErrorHandler.ErrorHandler.Report(error);
                     break;
                 }
@@ -291,7 +290,7 @@ namespace Compiler.SyntacticAnalyzer
                         _lexicalComponent.LineNumber,
                         _lexicalComponent.InitialPosition,
                         _lexicalComponent.FinalPosition,
-                        "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                        "Leí " + _lexicalComponent.Lexeme, "Conector inválido", "Utilice un AND u OR");
                     ErrorHandler.ErrorHandler.Report(error);
                     break;
                 }
@@ -318,7 +317,7 @@ namespace Compiler.SyntacticAnalyzer
                      _lexicalComponent.LineNumber,
                      _lexicalComponent.InitialPosition,
                      _lexicalComponent.FinalPosition,
-                     "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                     "Leí " + _lexicalComponent.Lexeme, "BY no encontrado ", "El ORDER va seguido de un BY");
                     ErrorHandler.ErrorHandler.Report(error);
                 }
                 DebugOutput(nextLevel, "<Ordination>");
@@ -346,7 +345,7 @@ namespace Compiler.SyntacticAnalyzer
                   _lexicalComponent.LineNumber,
                   _lexicalComponent.InitialPosition,
                   _lexicalComponent.FinalPosition,
-                  "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                  "Leí " + _lexicalComponent.Lexeme, "Criterio inválido", "Utilice un campo o índice");
                 ErrorHandler.ErrorHandler.Report(error);
             }
             DebugOutput(nextLevel, "<Criteria>");
@@ -372,7 +371,7 @@ namespace Compiler.SyntacticAnalyzer
                    _lexicalComponent.LineNumber,
                    _lexicalComponent.InitialPosition,
                    _lexicalComponent.FinalPosition,
-                   "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                   "Leí " + _lexicalComponent.Lexeme, "Índice inválido", "Los índices consisten de números enteros");
                 ErrorHandler.ErrorHandler.Report(error);
             }
             DebugOutput(nextLevel, "<Indices>");

@@ -48,7 +48,35 @@ namespace Compiler
 
             var syntacticAnalyzer = new SyntacticAnalysis();
 
-            syntacticAnalyzer.Analyze(true);
+            syntacticAnalyzer.Analyze(false);
+
+            ConfigureSymbolsTable();
+            ConfigureReservedWordsTable();
+            ConfigureLiteralsTable();
+        }
+
+        private void ConfigureSymbolsTable()
+        {
+            symbolsTable.DataSource = SymbolsTable.SymbolsTable.ObtainAllSymbols();
+            symbolsTable.Columns["LineNumber"].Visible = false;
+            symbolsTable.Columns["InitialPosition"].Visible = false;
+            symbolsTable.Columns["FinalPosition"].Visible = false;
+        }
+
+        private void ConfigureReservedWordsTable()
+        {
+            reservedKeywordsTable.DataSource = ReservedKeywordsTable.ObtainAllSymbols();
+            reservedKeywordsTable.Columns["LineNumber"].Visible = false;
+            reservedKeywordsTable.Columns["InitialPosition"].Visible = false;
+            reservedKeywordsTable.Columns["FinalPosition"].Visible = false;
+        }
+
+        private void ConfigureLiteralsTable()
+        {
+            literalsTable.DataSource = LiteralsTable.ObtainAllSymbols();
+            literalsTable.Columns["LineNumber"].Visible = false;
+            literalsTable.Columns["InitialPosition"].Visible = false;
+            literalsTable.Columns["FinalPosition"].Visible = false;
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
