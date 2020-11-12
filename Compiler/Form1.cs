@@ -10,9 +10,9 @@ namespace Compiler
 {
     public partial class Compiler : Form
     {
-        private OpenFileDialog _openFileDialog;
+        private readonly OpenFileDialog _openFileDialog;
         private string _fileText = string.Empty;
-        public static Output _output;
+        private static Output _output;
 
         public Compiler()
         {
@@ -25,8 +25,11 @@ namespace Compiler
             };
         }
 
-        private void compileButton_Click(object sender, EventArgs e)
+        private void CompileButton_Click(object sender, EventArgs e)
         {
+            MasterTable.Clear();
+            Cache.Cache.Clear();
+
             if (optionsTabControl.SelectedTab == editorTab)
             {
                 _output = new Output(codeTextBox.Text);
@@ -46,21 +49,6 @@ namespace Compiler
             var syntacticAnalyzer = new SyntacticAnalysis();
 
             syntacticAnalyzer.Analyze(true);
-
-            /*
-            var lexicalAnalyzer = new LexicalAnalysis();
-            LexicalComponent lexicalComponent = null;
-
-            lexicalAnalyzer.LoadNewLine();
-
-            do
-            {
-                lexicalComponent = lexicalAnalyzer.BuildComponent();
-                MessageBox.Show(lexicalComponent.ToString());
-            } while (!lexicalComponent.Category.Equals(Category.EndOfFile));
-            */
-
-            MessageBox.Show("Ejecución finalizada");
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)

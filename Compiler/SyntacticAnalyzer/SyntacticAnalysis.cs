@@ -1,4 +1,5 @@
-﻿using Compiler.ErrorHandler;
+﻿using System;
+using Compiler.ErrorHandler;
 using Compiler.LexicalAnalyzer;
 using Compiler.SymbolsTable;
 using System.Windows.Forms;
@@ -7,8 +8,8 @@ namespace Compiler.SyntacticAnalyzer
 {
     public class SyntacticAnalysis
     {
-        private LexicalAnalysis _lexicalAnalysis = new LexicalAnalysis();
-        private bool _debugEnabled = false;
+        private readonly LexicalAnalysis _lexicalAnalysis = new LexicalAnalysis();
+        private bool _debugEnabled;
         private LexicalComponent _lexicalComponent;
         private string _callStack = string.Empty;
 
@@ -20,7 +21,6 @@ namespace Compiler.SyntacticAnalyzer
             _lexicalAnalysis.LoadNewLine();
             GetComponent();
 
-            Expression("..");
             Query("..");
 
             if (ErrorHandler.ErrorHandler.HasErrors())
@@ -39,22 +39,30 @@ namespace Compiler.SyntacticAnalyzer
 
         private void GetComponent()
         {
-            _lexicalComponent = _lexicalAnalysis.BuildComponent();
+            try
+            {
+                _lexicalComponent = _lexicalAnalysis.BuildComponent();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+                throw;
+            }
         }
 
-        public void DebugInput(string indentation, string rule)
+        private void DebugInput(string indentation, string rule)
         {
-            _callStack += indentation + " entering rule " + rule + " with lexeme " + _lexicalComponent.Lexeme + " and category " + _lexicalComponent.Category + "\n";
+            _callStack += indentation + " entrando a la regla " + rule + " con lexema " + _lexicalComponent.Lexeme + " y categoria " + _lexicalComponent.Category + "\n";
             PrintCallStack();
         }
 
-        public void DebugOutput(string indentation, string rule)
+        private void DebugOutput(string indentation, string rule)
         {
-            _callStack += indentation + " leaving rule " + rule + "\n";
+            _callStack += indentation + " dejando regla " + rule + "\n";
             PrintCallStack();
         }
 
-        public void PrintCallStack()
+        private void PrintCallStack()
         {
             if (_debugEnabled)
             {
@@ -62,32 +70,28 @@ namespace Compiler.SyntacticAnalyzer
             }
         }
 
-        public void Expression(string indentation)
-        {
-            var nextLevelIndentation = indentation + "..";
-            DebugInput(nextLevelIndentation, "<Expression>");
-        }
-
         //<QUERY> := <SELECTOR><COMPARADOR><ORDENACION>
-        public void Query(string identation)
+        private void Query(string indentation)
         {
-            var identatioNextLevel = identation + "..";
-            Selector(identatioNextLevel);
-            Comparator(identatioNextLevel);
-            Ordination(identatioNextLevel);
+            var indentationNextLevel = indentation + "..";
+            DebugInput(indentationNextLevel, "<Query>");
+            Selector(indentationNextLevel);
+            Comparator(indentationNextLevel);
+            Ordination(indentationNextLevel);
+            DebugOutput(indentationNextLevel, "<Query>");
         }
 
-        private void Selector(string identation)
+        private void Selector(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var indentationNextLevel = indentation + "..";
+            DebugInput(indentationNextLevel, "<Selector>");
             if (_lexicalComponent.Category == Category.Select)
             {
                 GetComponent();
-                Fields(identatioNextLevel);
+                Fields(indentationNextLevel);
                 if (_lexicalComponent.Category == Category.From)
                 {
-                    GetComponent();
-                    Table(identatioNextLevel);
+                    From(indentationNextLevel);
                 }
                 else
                 {
@@ -96,7 +100,7 @@ namespace Compiler.SyntacticAnalyzer
                        _lexicalComponent.LineNumber,
                        _lexicalComponent.InitialPosition,
                        _lexicalComponent.FinalPosition,
-                       "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                       "I read " + _lexicalComponent.Lexeme, "From not found", "Correct");
                     ErrorHandler.ErrorHandler.Report(error);
                 }
             }
@@ -110,20 +114,30 @@ namespace Compiler.SyntacticAnalyzer
                    "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(indentationNextLevel, "<Selector>");
         }
 
-        private void Fields(string identation)
+        private void From(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<From>");
+            GetComponent();
+            Table(nextLevel);
+            DebugOutput(nextLevel, "<From>");
+        }
+
+        private void Fields(string indentation)
+        {
+            var indentationNextLevel = indentation + "..";
+            DebugInput(indentationNextLevel, "<Fields>");
             if (_lexicalComponent.Category == Category.Field)
             {
                 GetComponent();
                 if (_lexicalComponent.Category == Category.Separator)
                 {
                     GetComponent();
-                    Fields(identatioNextLevel);
+                    Fields(indentationNextLevel);
                 }
-
             }
             else
             {
@@ -135,21 +149,21 @@ namespace Compiler.SyntacticAnalyzer
                "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
-
+            DebugOutput(indentationNextLevel, "<Fields>");
         }
 
-        private void Table(string identation)
+        private void Table(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var indentationNextLevel = indentation + "..";
+            DebugInput(indentationNextLevel, "<Table>");
             if (_lexicalComponent.Category == Category.Table)
             {
                 GetComponent();
                 if (_lexicalComponent.Category == Category.Separator)
                 {
                     GetComponent();
-                    Table(identatioNextLevel);
+                    Table(indentationNextLevel);
                 }
-
             }
             else
             {
@@ -161,33 +175,36 @@ namespace Compiler.SyntacticAnalyzer
                "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
-
+            DebugOutput(indentationNextLevel, "<Table>");
         }
 
-        private void Comparator(string identation)
+        private void Comparator(string indentation)
         {
-            var identatioNextLevel = identation + "..";
-
+            var indentationNextLevel = indentation + "..";
             if (_lexicalComponent.Category == Category.Where)
             {
+                DebugInput(indentationNextLevel, "<Comparator>");
                 GetComponent();
-                Conditions(identatioNextLevel);
-
+                Conditions(indentationNextLevel);
+                DebugOutput(indentationNextLevel, "<Comparator>");
             }
         }
 
-        private void Conditions(string identation)
+        private void Conditions(string indentation)
         {
-            var identatioNextLevel = identation + "..";
-            Operating(identatioNextLevel);
-            Operator(identatioNextLevel);
-            Operating(identatioNextLevel);
-            Validator(identatioNextLevel);
+            var indentationNextLevel = indentation + "..";
+            DebugInput(indentationNextLevel, "<Conditions>");
+            Operating(indentationNextLevel);
+            Operator(indentationNextLevel);
+            Operating(indentationNextLevel);
+            Validator(indentationNextLevel);
+            DebugOutput(indentationNextLevel, "<Conditions>");
         }
 
-        private void Operating(string identation)
+        private void Operating(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var indentationNextLevel = indentation + "..";
+            DebugInput(indentationNextLevel, "<Operating>");
             if (_lexicalComponent.Category == Category.Field)
             {
                 GetComponent();
@@ -198,7 +215,9 @@ namespace Compiler.SyntacticAnalyzer
             }
             else if (_lexicalComponent.Category == Category.Integer || _lexicalComponent.Category == Category.Decimal)
             {
+                DebugInput(indentationNextLevel, "<Number>");
                 GetComponent();
+                DebugOutput(indentationNextLevel, "<Number>");
             }
             else
             {
@@ -210,96 +229,87 @@ namespace Compiler.SyntacticAnalyzer
                   "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(indentationNextLevel, "<Operating>");
         }
-        private void Operator(string identation)
+
+        private void Operator(string indentation)
         {
-            var identatioNextLevel = identation + "..";
-            if (_lexicalComponent.Category == Category.GreaterThan)
+            var indentationNextLevel = indentation + "..";
+            DebugInput(indentationNextLevel, "<Operator>");
+            switch (_lexicalComponent.Category)
             {
-                GetComponent();
+                case Category.GreaterThan:
+                case Category.LessThan:
+                case Category.EqualTo:
+                case Category.GreaterThanOrEqualTo:
+                case Category.LessThanOrEqualTo:
+                // Por aqui elimine un different than duplicado xd
+                case Category.DifferentThan:
+                    GetComponent();
+                    break;
+                default:
+                {
+                    var error = Error.CreateSemanticError(
+                        _lexicalComponent.Lexeme,
+                        _lexicalComponent.LineNumber,
+                        _lexicalComponent.InitialPosition,
+                        _lexicalComponent.FinalPosition,
+                        "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                    ErrorHandler.ErrorHandler.Report(error);
+                    break;
+                }
             }
-            else if (_lexicalComponent.Category == Category.LessThan)
-            {
-                GetComponent();
-            }
-            else if (_lexicalComponent.Category == Category.EqualTo)
-            {
-                GetComponent();
-
-            }
-            else if (_lexicalComponent.Category == Category.GreaterThanOrEqualTo)
-            {
-                GetComponent();
-            }
-            else if (_lexicalComponent.Category == Category.LessThanOrEqualTo)
-            {
-                GetComponent();
-
-            }
-            else if (_lexicalComponent.Category == Category.DifferentThan)
-            {
-                GetComponent();
-            }
-            else if (_lexicalComponent.Category == Category.DifferentThan)
-            {
-                GetComponent();
-
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
-                  _lexicalComponent.Lexeme,
-                  _lexicalComponent.LineNumber,
-                  _lexicalComponent.InitialPosition,
-                  _lexicalComponent.FinalPosition,
-                  "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
-                ErrorHandler.ErrorHandler.Report(error);
-            }
+            DebugOutput(indentationNextLevel, "<Operator>");
         }
-        private void Validator(string identation)
+
+        private void Validator(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var nextLevel = indentation + "..";
             if (_lexicalComponent.Category == Category.And || _lexicalComponent.Category == Category.Or)
             {
-                Conector(identatioNextLevel);
-                Conditions(identatioNextLevel);
+                DebugInput(nextLevel, "<Validator>");
+                Connector(nextLevel);
+                Conditions(nextLevel);
+                DebugOutput(nextLevel, "<Validator>");
             }
         }
 
-        private void Conector(string identation)
+        private void Connector(string indentation)
         {
-            var identatioNextLevel = identation + "..";
-            if (_lexicalComponent.Category == Category.And)
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<Connector>");
+            switch (_lexicalComponent.Category)
             {
-                GetComponent();
+                case Category.And:
+                case Category.Or:
+                    GetComponent();
+                    break;
+                default:
+                {
+                    var error = Error.CreateSemanticError(
+                        _lexicalComponent.Lexeme,
+                        _lexicalComponent.LineNumber,
+                        _lexicalComponent.InitialPosition,
+                        _lexicalComponent.FinalPosition,
+                        "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                    ErrorHandler.ErrorHandler.Report(error);
+                    break;
+                }
             }
-            else if (_lexicalComponent.Category == Category.Or)
-            {
-                GetComponent();
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
-                 _lexicalComponent.Lexeme,
-                 _lexicalComponent.LineNumber,
-                 _lexicalComponent.InitialPosition,
-                 _lexicalComponent.FinalPosition,
-                 "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
-                ErrorHandler.ErrorHandler.Report(error);
-            }
+            DebugOutput(nextLevel, "<Connector>");
         }
 
-        private void Ordination(string identation)
+        private void Ordination(string indentation)
         {
-            var identatioNextLevel = identation + "..";
-
+            var nextLevel = indentation + "..";
             if (_lexicalComponent.Category == Category.Order)
             {
+                DebugInput(nextLevel, "<Ordination>");
                 GetComponent();
                 if (_lexicalComponent.Category == Category.By)
                 {
                     GetComponent();
-                    Criteria(identatioNextLevel);
+                    Criteria(nextLevel);
                 }
                 else
                 {
@@ -311,62 +321,67 @@ namespace Compiler.SyntacticAnalyzer
                      "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                     ErrorHandler.ErrorHandler.Report(error);
                 }
+                DebugOutput(nextLevel, "<Ordination>");
             }
         }
 
-        private void Criteria(string identation)
+        private void Criteria(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<Criteria>");
             if (_lexicalComponent.Category == Category.Field)
             {
-                Fields(identatioNextLevel);
-                Criterion(identatioNextLevel);
-
+                Fields(nextLevel);
+                Criterion(nextLevel);
             }
             else if (_lexicalComponent.Category == Category.Integer)
             {
-                Indices(identatioNextLevel);
-                Criterion(identatioNextLevel);
+                Indices(nextLevel);
+                Criterion(nextLevel);
             }
             else
             {
                 var error = Error.CreateSemanticError(
-              _lexicalComponent.Lexeme,
-              _lexicalComponent.LineNumber,
-              _lexicalComponent.InitialPosition,
-              _lexicalComponent.FinalPosition,
-              "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                  _lexicalComponent.Lexeme,
+                  _lexicalComponent.LineNumber,
+                  _lexicalComponent.InitialPosition,
+                  _lexicalComponent.FinalPosition,
+                  "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
+            DebugOutput(nextLevel, "<Criteria>");
         }
-        private void Indices(string identation)
+
+        private void Indices(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<Indices>");
             if (_lexicalComponent.Category == Category.Integer)
             {
                 GetComponent();
                 if (_lexicalComponent.Category == Category.Separator)
                 {
                     GetComponent();
-                    Indices(identatioNextLevel);
+                    Indices(nextLevel);
                 }
             }
             else
             {
                 var error = Error.CreateSemanticError(
-               _lexicalComponent.Lexeme,
-               _lexicalComponent.LineNumber,
-               _lexicalComponent.InitialPosition,
-               _lexicalComponent.FinalPosition,
-               "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
+                   _lexicalComponent.Lexeme,
+                   _lexicalComponent.LineNumber,
+                   _lexicalComponent.InitialPosition,
+                   _lexicalComponent.FinalPosition,
+                   "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Correct");
                 ErrorHandler.ErrorHandler.Report(error);
             }
-
+            DebugOutput(nextLevel, "<Indices>");
         }
 
-        private void Criterion(string identation)
+        private void Criterion(string indentation)
         {
-            var identatioNextLevel = identation + "..";
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<Criterion>");
             if (_lexicalComponent.Category == Category.Asc)
             {
                 GetComponent();
@@ -375,25 +390,7 @@ namespace Compiler.SyntacticAnalyzer
             {
                 GetComponent();
             }
+            DebugOutput(nextLevel, "<Criterion>");
         }
-
-
-
-
-        /*
-        private void Digit(string indentation)
-        {
-            DebugInput(indentation, "<Digit>");
-            var nextLevelIndentation = indentation + "..";
-            Factor(nextLevelIndentation);
-            TerminoPrima(nextLevelIndentation);
-            DepurarSalida(indentation, "<Digit>");
-        }
-
-        private void Factor(string indentation)
-        {
-
-        }
-        */
     }
 }

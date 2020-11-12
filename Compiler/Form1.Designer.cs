@@ -65,7 +65,7 @@
             this.compileButton.TabIndex = 2;
             this.compileButton.Text = "Compile";
             this.compileButton.UseVisualStyleBackColor = true;
-            this.compileButton.Click += new System.EventHandler(this.compileButton_Click);
+            this.compileButton.Click += new System.EventHandler(this.CompileButton_Click);
             // 
             // optionsTabControl
             // 
