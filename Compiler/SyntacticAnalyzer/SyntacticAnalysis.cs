@@ -117,7 +117,7 @@ namespace Compiler.SyntacticAnalyzer
                     _lexicalComponent.FinalPosition,
                     "Leí " + _lexicalComponent.Lexeme,
                     "Esperaba FROM",
-                    "Utilice un SELECT para iniciar la construcción de la query"
+                    "Utilice un FROM"
                 );
 
                 ErrorHandler.ErrorHandler.Report(error);
@@ -210,6 +210,26 @@ namespace Compiler.SyntacticAnalyzer
             if (_lexicalComponent.Category == Category.Where)
             {
                 Conditions(nextLevel);
+            }
+            else if (_lexicalComponent.Category == Category.EndOfFile|| _lexicalComponent.Category == Category.Order)
+            {
+                // Todo OK
+            }
+            else
+            {
+                var error = Error.CreateSyntacticError(
+                   _lexicalComponent.Lexeme,
+                   _lexicalComponent.LineNumber,
+                   _lexicalComponent.InitialPosition,
+                   _lexicalComponent.FinalPosition,
+                   "Leí " + _lexicalComponent.Lexeme,
+                   "Esperaba un WHERE  un ORDER BY o un FIN DE ARCHIVO",
+                   "Utilice un  WHERE  un ORDER BY o un FIN DE ARCHIVO"
+               );
+
+                ErrorHandler.ErrorHandler.Report(error);
+                DebugOutput(nextLevel, "<connector>");
+                return;
             }
 
             DebugOutput(nextLevel, "<where>");
@@ -343,8 +363,8 @@ namespace Compiler.SyntacticAnalyzer
                     _lexicalComponent.InitialPosition,
                     _lexicalComponent.FinalPosition,
                     "Leí " + _lexicalComponent.Lexeme,
-                    "Esperaba CONECTOR u ORDER BY",
-                    "Utilice un CONECTOR"
+                    "Esperaba un CONECTOR un ORDER BY o un FIN DE ARCHIVO",
+                    "Utilice un CONECTOR un ORDER BY o un FIN DE ARCHIVO"
                 );
 
                 ErrorHandler.ErrorHandler.Report(error);
@@ -438,7 +458,7 @@ namespace Compiler.SyntacticAnalyzer
 
         private void Criteria(string indentation)
         {
-            GetComponent();
+       
             var nextLevel = indentation + "..";
             DebugInput(nextLevel, "<criteria>");
 
