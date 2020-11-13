@@ -19,9 +19,8 @@ namespace Compiler.SyntacticAnalyzer
             _callStack = string.Empty;
 
             _lexicalAnalysis.LoadNewLine();
-            GetComponent();
 
-            Query("..");
+            Query();
 
             if (ErrorHandler.ErrorHandler.HasErrors())
             {
@@ -69,388 +68,407 @@ namespace Compiler.SyntacticAnalyzer
             }
         }
 
-        //<QUERY> := <SELECTOR><COMPARADOR><ORDENACION>
-        private void Query(string indentation)
+        // <query>
+        private void Query()
         {
-            var indentationNextLevel = indentation + "..";
-            DebugInput(indentationNextLevel, "<Query>");
-            Selector(indentationNextLevel);
-            Comparator(indentationNextLevel);
-            Ordination(indentationNextLevel);
-            DebugOutput(indentationNextLevel, "<Query>");
+            var indentation = "..";
+            GetComponent();
+            DebugInput(indentation, "<query>");
+            Selector(indentation);
+            Where(indentation);
+            OrderBy(indentation);
+            DebugOutput(indentation, "<query>");
         }
 
+        // <selector>
         private void Selector(string indentation)
         {
-            var indentationNextLevel = indentation + "..";
-            DebugInput(indentationNextLevel, "<Selector>");
-            if (_lexicalComponent.Category == Category.Select)
-            {
-                GetComponent();
-                Fields(indentationNextLevel);
-                if (_lexicalComponent.Category == Category.From)
-                {
-                    From(indentationNextLevel);
-                }
-                else
-                {
-                    var error = Error.CreateSemanticError(
-                       _lexicalComponent.Lexeme,
-                       _lexicalComponent.LineNumber,
-                       _lexicalComponent.InitialPosition,
-                       _lexicalComponent.FinalPosition,
-                       "Leí " + _lexicalComponent.Lexeme, "FROM faltante", "Luego de un selector, se debe especificar mediante un FROM de que tablas se desean traer los datos");
-                    ErrorHandler.ErrorHandler.Report(error);
-                }
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
-                   _lexicalComponent.Lexeme,
-                   _lexicalComponent.LineNumber,
-                   _lexicalComponent.InitialPosition,
-                   _lexicalComponent.FinalPosition,
-                   "Leí " + _lexicalComponent.Lexeme, "SELECT faltante", "Debe iniciar la consulta con un SELECT");
-                ErrorHandler.ErrorHandler.Report(error);
-            }
-            DebugOutput(indentationNextLevel, "<Selector>");
-        }
-
-        private void From(string indentation)
-        {
             var nextLevel = indentation + "..";
-            DebugInput(nextLevel, "<From>");
-            GetComponent();
-            Table(nextLevel);
-            DebugOutput(nextLevel, "<From>");
-        }
+            DebugInput(nextLevel, "<selector>");
 
-        private void Fields(string indentation)
-        {
-            var indentationNextLevel = indentation + "..";
-            DebugInput(indentationNextLevel, "<Fields>");
-            if (_lexicalComponent.Category == Category.Field)
+            // Busca SELECT
+            if (_lexicalComponent.Category != Category.Select)
             {
-                GetComponent();
-                if (_lexicalComponent.Category == Category.Separator)
-                {
-                    GetComponent();
-                    Fields(indentationNextLevel);
-                }
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
-                   _lexicalComponent.Lexeme,
-                   _lexicalComponent.LineNumber,
-                   _lexicalComponent.InitialPosition,
-                   _lexicalComponent.FinalPosition,
-                   "Leí " + _lexicalComponent.Lexeme, "CAMPO faltante", "Hace falta declarar un campo");
-                ErrorHandler.ErrorHandler.Report(error);
-            }
-            DebugOutput(indentationNextLevel, "<Fields>");
-        }
-
-        private void Table(string indentation)
-        {
-            var indentationNextLevel = indentation + "..";
-            DebugInput(indentationNextLevel, "<Table>");
-            if (_lexicalComponent.Category == Category.Table)
-            {
-                GetComponent();
-                if (_lexicalComponent.Category == Category.Separator)
-                {
-                    GetComponent();
-                    Table(indentationNextLevel);
-                }
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
-                   _lexicalComponent.Lexeme,
-                   _lexicalComponent.LineNumber,
-                   _lexicalComponent.InitialPosition,
-                   _lexicalComponent.FinalPosition,
-                   "Leí " + _lexicalComponent.Lexeme, "TABLA faltante", "Hace falta declarar una tabla");
-                ErrorHandler.ErrorHandler.Report(error);
-            }
-            DebugOutput(indentationNextLevel, "<Table>");
-        }
-
-        private void Comparator(string indentation)
-        {
-            var indentationNextLevel = indentation + "..";
-            if (_lexicalComponent.Category == Category.Where)
-            {
-                DebugInput(indentationNextLevel, "<Comparator>");
-                GetComponent();
-                Conditions(indentationNextLevel);
-                DebugOutput(indentationNextLevel, "<Comparator>");
-            }
-            else if (_lexicalComponent.Category != Category.EndOfFile && _lexicalComponent.Category != Category.Order)
-            {
-                var error = Error.CreateSemanticError(
+                var error = Error.CreateSyntacticError(
                     _lexicalComponent.Lexeme,
                     _lexicalComponent.LineNumber,
                     _lexicalComponent.InitialPosition,
                     _lexicalComponent.FinalPosition,
-                    "Leí " + _lexicalComponent.Lexeme, "Esperaba un order by o un fin de archivo", "añada un order by o fin de archivo");
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba SELECT",
+                    "Utilice un SELECT para iniciar la construcción de la query"
+                );
+
                 ErrorHandler.ErrorHandler.Report(error);
+                return;
             }
+
+            // Busca CAMPOS
+            GetComponent();
+            Fields(nextLevel);
+
+            // Busca FROM
+            if (_lexicalComponent.Category != Category.From)
+            {
+                var error = Error.CreateSyntacticError(
+                    _lexicalComponent.Lexeme,
+                    _lexicalComponent.LineNumber,
+                    _lexicalComponent.InitialPosition,
+                    _lexicalComponent.FinalPosition,
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba FROM",
+                    "Utilice un SELECT para iniciar la construcción de la query"
+                );
+
+                ErrorHandler.ErrorHandler.Report(error);
+                return;
+            }
+
+            // Busca TABLAS
+            GetComponent();
+            Tables(nextLevel);
+
+            DebugOutput(nextLevel, "<selector>");
         }
 
-        private void Conditions(string identation)
+        // <fields>
+        private void Fields(string indentation)
         {
-            DebugInput(identation, "<Conditions>");
-            var identatioNextLevel = identation + "..";
-            Operating(identatioNextLevel);
-            Operator(identatioNextLevel);
-            Validator(identatioNextLevel);
-            DebugOutput(identation, "<Conditions>");
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<fields>");
+
+            if (_lexicalComponent.Category == Category.Field)
+            {
+                GetComponent();
+
+                if (_lexicalComponent.Category == Category.Separator)
+                {
+                    GetComponent();
+                    Fields(nextLevel);
+                }
+            }
+            else
+            {
+                var error = Error.CreateSyntacticError(
+                    _lexicalComponent.Lexeme,
+                    _lexicalComponent.LineNumber,
+                    _lexicalComponent.InitialPosition,
+                    _lexicalComponent.FinalPosition,
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba <campo>",
+                    "Utilice un campo después del <select> al iniciar la construcción de la query"
+                );
+
+                ErrorHandler.ErrorHandler.Report(error);
+                return;
+            }
+
+            DebugOutput(nextLevel, "<fields>");
+        }
+
+        // <tables>
+        private void Tables(string indentation)
+        {
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<tables>");
+
+            if (_lexicalComponent.Category == Category.Table)
+            {
+                GetComponent();
+
+                if (_lexicalComponent.Category == Category.Separator)
+                {
+                    GetComponent();
+                    Tables(nextLevel);
+                }
+            }
+            else
+            {
+                var error = Error.CreateSyntacticError(
+                    _lexicalComponent.Lexeme,
+                    _lexicalComponent.LineNumber,
+                    _lexicalComponent.InitialPosition,
+                    _lexicalComponent.FinalPosition,
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba TABLA",
+                    "Utilice una TABLA después del FROM al iniciar la construcción de la query"
+                );
+
+                ErrorHandler.ErrorHandler.Report(error);
+                return;
+            }
+
+            DebugOutput(nextLevel, "<tables>");
+        }
+
+        // <where>
+        private void Where(string indentation)
+        {
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<where>");
+
+            if (_lexicalComponent.Category == Category.Where)
+            {
+                Conditions(nextLevel);
+            }
+
+            DebugOutput(nextLevel, "<where>");
+        }
+
+        // <conditions>
+        private void Conditions(string indentation)
+        {
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<conditions>");
+
+            Operating(nextLevel);
+            Operator(nextLevel);
+            SecondOperating(nextLevel);
+
+            DebugOutput(nextLevel, "<conditions>");
         }
 
         private void Operating(string indentation)
         {
-            var indentationNextLevel = indentation + "..";
-            DebugInput(indentationNextLevel, "<Operating>");
-            if (_lexicalComponent.Category == Category.Field)
-            {
-                GetComponent();
-            }
-            else if (_lexicalComponent.Category == Category.Literal)
-            {
-                GetComponent();
-            }
-            else if (_lexicalComponent.Category == Category.Integer || _lexicalComponent.Category == Category.Decimal)
-            {
-                DebugInput(indentationNextLevel, "<Number>");
-                GetComponent();
-                DebugOutput(indentationNextLevel, "<Number>");
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
-                  _lexicalComponent.Lexeme,
-                  _lexicalComponent.LineNumber,
-                  _lexicalComponent.InitialPosition,
-                  _lexicalComponent.FinalPosition,
-                  "Leí " + _lexicalComponent.Lexeme, "Error de operación", "Utilice un campo, literal o número");
-                ErrorHandler.ErrorHandler.Report(error);
-            }
-            DebugOutput(indentationNextLevel, "<Operating>");
-        }
+            GetComponent();
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<operating>");
 
-        private void Operator(string indentation)
-        {
-            var indentationNextLevel = indentation + "..";
-            DebugInput(indentationNextLevel, "<Operator>");
-            switch (_lexicalComponent.Category)
+            // Si no es un operando
+            if (_lexicalComponent.Category is not Category.Field
+                && _lexicalComponent.Category is not Category.Literal
+                && _lexicalComponent.Category is not Category.Integer
+                && _lexicalComponent.Category is not Category.Decimal)
             {
-                case Category.GreaterThan:
-                case Category.LessThan:
-                case Category.EqualTo:
-                case Category.GreaterThanOrEqualTo:
-                case Category.LessThanOrEqualTo:
-                case Category.DifferentThan:
-                    GetComponent();
-                    break;
-                default:
-                    {
-                        var error = Error.CreateSemanticError(
-                            _lexicalComponent.Lexeme,
-                            _lexicalComponent.LineNumber,
-                            _lexicalComponent.InitialPosition,
-                            _lexicalComponent.FinalPosition,
-                            "Leí " + _lexicalComponent.Lexeme, "Operador incorrecto", "Utilice uno de los operadores válidos del lenguaje");
-                        ErrorHandler.ErrorHandler.Report(error);
-                        break;
-                    }
-            }
-            DebugOutput(indentationNextLevel, "<Operator>");
-        }
-
-        private void Validator(string identation)
-        {
-            DebugInput(identation, "<Validator>");
-            var identatioNextLevel = identation + "..";
-            if (_lexicalComponent.Category == Category.Field || _lexicalComponent.Category == Category.Literal || _lexicalComponent.Category == Category.Integer || _lexicalComponent.Category == Category.Decimal)
-            {
-                Operating(identatioNextLevel);
-                if (_lexicalComponent.Category == Category.And || _lexicalComponent.Category == Category.Or)
-                {
-                    Connector(identatioNextLevel);
-                    Conditions(identatioNextLevel);
-                }
-                else if (_lexicalComponent.Category != Category.EndOfFile && _lexicalComponent.Category != Category.Order)
-                {
-                    var error = Error.CreateSemanticError(
-                        _lexicalComponent.Lexeme,
-                        _lexicalComponent.LineNumber,
-                        _lexicalComponent.InitialPosition,
-                        _lexicalComponent.FinalPosition,
-                        "Leí " + _lexicalComponent.Lexeme, "Esperaba un conector, order by o fin de archivo", "Asegúrese de que continue un conector");
-                    ErrorHandler.ErrorHandler.Report(error);
-                }
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
+                var error = Error.CreateSyntacticError(
                     _lexicalComponent.Lexeme,
                     _lexicalComponent.LineNumber,
                     _lexicalComponent.InitialPosition,
                     _lexicalComponent.FinalPosition,
-                    "Leí " + _lexicalComponent.Lexeme, "Esperaba un conector, fin de archivo u order by", "Asegúrese de que continue un conector, fin de archivo, order by");
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba OPERANDO",
+                    "Utilice un OPERANDO para las condiciones"
+                );
+
                 ErrorHandler.ErrorHandler.Report(error);
+                DebugOutput(nextLevel, "<operating>");
+                return;
             }
+            DebugOutput(nextLevel, "<operating>");
+        }
+
+        private void SecondOperating(string indentation)
+        {
+            GetComponent();
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<operating>");
+
+            // Si no es un operando
+            if (_lexicalComponent.Category is not Category.Field
+                && _lexicalComponent.Category is not Category.Literal
+                && _lexicalComponent.Category is not Category.Integer
+                && _lexicalComponent.Category is not Category.Decimal)
+            {
+                var error = Error.CreateSyntacticError(
+                    _lexicalComponent.Lexeme,
+                    _lexicalComponent.LineNumber,
+                    _lexicalComponent.InitialPosition,
+                    _lexicalComponent.FinalPosition,
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba OPERANDO",
+                    "Utilice un OPERANDO después del operador"
+                );
+
+                ErrorHandler.ErrorHandler.Report(error);
+                DebugOutput(nextLevel, "<operating>");
+                return;
+            }
+
+            Connector(nextLevel);
+
+            DebugOutput(nextLevel, "<operating>");
+        }
+
+        // <operator>
+        private void Operator(string indentation)
+        {
+            GetComponent();
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<operator>");
+
+            if (_lexicalComponent.Category is not Category.DifferentThan
+                && _lexicalComponent.Category is not Category.GreaterThan
+                && _lexicalComponent.Category is not Category.LessThan
+                && _lexicalComponent.Category is not Category.EqualTo
+                && _lexicalComponent.Category is not Category.GreaterThanOrEqualTo
+                && _lexicalComponent.Category is not Category.LessThanOrEqualTo)
+            {
+                var error = Error.CreateSyntacticError(
+                    _lexicalComponent.Lexeme,
+                    _lexicalComponent.LineNumber,
+                    _lexicalComponent.InitialPosition,
+                    _lexicalComponent.FinalPosition,
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba OPERADOR",
+                    "Utilice un OPERADOR después de OPERANDO"
+                );
+
+                ErrorHandler.ErrorHandler.Report(error);
+                DebugOutput(nextLevel, "<operator>");
+                return;
+            }
+
+            DebugOutput(nextLevel, "<operator>");
         }
 
         private void Connector(string indentation)
         {
             var nextLevel = indentation + "..";
-            DebugInput(nextLevel, "<Connector>");
-            switch (_lexicalComponent.Category)
-            {
-                case Category.And:
-                case Category.Or:
-                    GetComponent();
-                    break;
-                default:
-                    {
-                        var error = Error.CreateSemanticError(
-                            _lexicalComponent.Lexeme,
-                            _lexicalComponent.LineNumber,
-                            _lexicalComponent.InitialPosition,
-                            _lexicalComponent.FinalPosition,
-                            "Leí " + _lexicalComponent.Lexeme, "Conector inválido", "Utilice un AND u OR");
-                        ErrorHandler.ErrorHandler.Report(error);
-                        break;
-                    }
-            }
-            DebugOutput(nextLevel, "<Connector>");
-        }
+            DebugInput(nextLevel, "<connector>");
 
-        private void Ordination(string indentation)
-        {
-            var nextLevel = indentation + "..";
-            if (_lexicalComponent.Category == Category.Order)
+            GetComponent();
+
+            if (_lexicalComponent.Category == Category.And || _lexicalComponent.Category == Category.Or)
             {
-                DebugInput(nextLevel, "<Ordination>");
-                GetComponent();
-                if (_lexicalComponent.Category == Category.By)
-                {
-                    GetComponent();
-                    Criteria(nextLevel);
-                }
-                else
-                {
-                    var error = Error.CreateSemanticError(
-                     _lexicalComponent.Lexeme,
-                     _lexicalComponent.LineNumber,
-                     _lexicalComponent.InitialPosition,
-                     _lexicalComponent.FinalPosition,
-                     "Leí " + _lexicalComponent.Lexeme, "BY no encontrado ", "El ORDER va seguido de un BY");
-                    ErrorHandler.ErrorHandler.Report(error);
-                }
-                DebugOutput(nextLevel, "<Ordination>");
+                Conditions(nextLevel);
             }
-            else if (_lexicalComponent.Category != Category.EndOfFile)
+            else if (_lexicalComponent.Category is Category.Field
+                     || _lexicalComponent.Category is Category.Literal
+                     || _lexicalComponent.Category is Category.Integer
+                     || _lexicalComponent.Category is Category.Decimal)
             {
-                var error = Error.CreateSemanticError(
+                var error = Error.CreateSyntacticError(
                     _lexicalComponent.Lexeme,
                     _lexicalComponent.LineNumber,
                     _lexicalComponent.InitialPosition,
                     _lexicalComponent.FinalPosition,
-                    "Leí " + _lexicalComponent.Lexeme, "Esperaba un Order By o fin de archivo", "Finalice la sentencia con un order by o fin de archivo");
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba CONECTOR u ORDER BY",
+                    "Utilice un CONECTOR"
+                );
+
                 ErrorHandler.ErrorHandler.Report(error);
+                DebugOutput(nextLevel, "<connector>");
+                return;
             }
+
+            DebugOutput(nextLevel, "<connector>");
+        }
+
+        private void OrderBy(string indentation)
+        {
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<connector>");
+
+            if (_lexicalComponent.Category == Category.Order)
+            {
+                GetComponent();
+
+                if (_lexicalComponent.Category == Category.By)
+                {
+                    GetComponent();
+
+                    if (_lexicalComponent.Category == Category.Integer)
+                    {
+                        Index(nextLevel);
+                    }
+                    else if (_lexicalComponent.Category == Category.Field)
+                    {
+                        Fields(nextLevel);
+                    }
+                    else
+                    {
+                        var error = Error.CreateSyntacticError(
+                            _lexicalComponent.Lexeme,
+                            _lexicalComponent.LineNumber,
+                            _lexicalComponent.InitialPosition,
+                            _lexicalComponent.FinalPosition,
+                            "Leí " + _lexicalComponent.Lexeme,
+                            "Esperaba CAMPO O INDICE de ordenación",
+                            "Utilice un CAMPO O INDICE"
+                        );
+
+                        ErrorHandler.ErrorHandler.Report(error);
+                        DebugOutput(nextLevel, "<connector>");
+                        return;
+                    }
+
+                    Criteria(nextLevel);
+                }
+            }
+            else if (_lexicalComponent.Category == Category.EndOfFile)
+            {
+                // Todo Ok, no lea más
+            }
+            else
+            {
+                var error = Error.CreateSyntacticError(
+                    _lexicalComponent.Lexeme,
+                    _lexicalComponent.LineNumber,
+                    _lexicalComponent.InitialPosition,
+                    _lexicalComponent.FinalPosition,
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba ORDER BY",
+                    "Utilice un ORDER BY"
+                );
+
+                ErrorHandler.ErrorHandler.Report(error);
+                DebugOutput(nextLevel, "<connector>");
+                return;
+            }
+
+            DebugOutput(nextLevel, "<connector>");
+        }
+
+        private void Index(string indentation)
+        {
+            var nextLevel = indentation + "..";
+            DebugInput(nextLevel, "<index>");
+
+            GetComponent();
+
+            if (_lexicalComponent.Category == Category.Separator)
+            {
+                GetComponent();
+                Index(nextLevel);
+            }
+
+            DebugOutput(nextLevel, "<index>");
         }
 
         private void Criteria(string indentation)
         {
+            GetComponent();
             var nextLevel = indentation + "..";
-            DebugInput(nextLevel, "<Criteria>");
-            if (_lexicalComponent.Category == Category.Field)
+            DebugInput(nextLevel, "<criteria>");
+
+            if (_lexicalComponent.Category is Category.Asc
+                || _lexicalComponent.Category is Category.Desc)
             {
-                Fields(nextLevel);
-                Criterion(nextLevel);
+                GetComponent();
             }
-            else if (_lexicalComponent.Category == Category.Integer)
+            else if (_lexicalComponent.Category == Category.EndOfFile)
             {
-                Indices(nextLevel);
-                Criterion(nextLevel);
+                // Todo OK
             }
             else
             {
-                var error = Error.CreateSemanticError(
-                  _lexicalComponent.Lexeme,
-                  _lexicalComponent.LineNumber,
-                  _lexicalComponent.InitialPosition,
-                  _lexicalComponent.FinalPosition,
-                  "Leí " + _lexicalComponent.Lexeme, "Criterio inválido", "Utilice un campo o índice");
-                ErrorHandler.ErrorHandler.Report(error);
-            }
-            DebugOutput(nextLevel, "<Criteria>");
-        }
+                var error = Error.CreateSyntacticError(
+                    _lexicalComponent.Lexeme,
+                    _lexicalComponent.LineNumber,
+                    _lexicalComponent.InitialPosition,
+                    _lexicalComponent.FinalPosition,
+                    "Leí " + _lexicalComponent.Lexeme,
+                    "Esperaba CRITERIO o FIN DE ARCHIVO",
+                    "Utilice un CRITERIO o FIN DE ARCHIVO"
+                );
 
-        private void Indices(string indentation)
-        {
-            var nextLevel = indentation + "..";
-            DebugInput(nextLevel, "<Indices>");
-            if (_lexicalComponent.Category == Category.Integer)
-            {
-                GetComponent();
-                if (_lexicalComponent.Category == Category.Separator)
-                {
-                    GetComponent();
-                    Indices(nextLevel);
-                }
-            }
-            else
-            {
-                var error = Error.CreateSemanticError(
-                   _lexicalComponent.Lexeme,
-                   _lexicalComponent.LineNumber,
-                   _lexicalComponent.InitialPosition,
-                   _lexicalComponent.FinalPosition,
-                   "Leí " + _lexicalComponent.Lexeme, "Índice inválido", "Los índices consisten de números enteros");
                 ErrorHandler.ErrorHandler.Report(error);
+                DebugOutput(nextLevel, "<criteria>");
+                return;
             }
-            DebugOutput(nextLevel, "<Indices>");
-        }
 
-        private void Criterion(string indentation)
-        {
-            var nextLevel = indentation + "..";
-            DebugInput(nextLevel, "<Criterion>");
-            if (_lexicalComponent.Category == Category.Asc)
-            {
-                GetComponent();
-                if (_lexicalComponent.Category != Category.EndOfFile)
-                {
-                    var error = Error.CreateSemanticError(
-                        _lexicalComponent.Lexeme,
-                        _lexicalComponent.LineNumber,
-                        _lexicalComponent.InitialPosition,
-                        _lexicalComponent.FinalPosition,
-                        "Leí " + _lexicalComponent.Lexeme, "Fin de archivo esperado", "Luego de leer un ");
-                    ErrorHandler.ErrorHandler.Report(error);
-                }
-            }
-            else if (_lexicalComponent.Category == Category.Desc)
-            {
-                GetComponent();
-                if (_lexicalComponent.Category != Category.EndOfFile)
-                {
-                    var error = Error.CreateSemanticError(
-                        _lexicalComponent.Lexeme,
-                        _lexicalComponent.LineNumber,
-                        _lexicalComponent.InitialPosition,
-                        _lexicalComponent.FinalPosition,
-                        "I read " + _lexicalComponent.Lexeme, "Lexical error ", "Viejito como asi");
-                    ErrorHandler.ErrorHandler.Report(error);
-                }
-            }
-            DebugOutput(nextLevel, "<Criterion>");
+            DebugOutput(nextLevel, "<criteria>");
         }
     }
 }
