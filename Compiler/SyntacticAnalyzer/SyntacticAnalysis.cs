@@ -235,10 +235,10 @@ namespace Compiler.SyntacticAnalyzer
             DebugInput(nextLevel, "<operating>");
 
             // Si no es un operando
-            if (_lexicalComponent.Category is not Category.Field
-                && _lexicalComponent.Category is not Category.Literal
-                && _lexicalComponent.Category is not Category.Integer
-                && _lexicalComponent.Category is not Category.Decimal)
+            if (_lexicalComponent.Category != Category.Field
+                && _lexicalComponent.Category != Category.Literal
+                && _lexicalComponent.Category != Category.Integer
+                && _lexicalComponent.Category != Category.Decimal)
             {
                 var error = Error.CreateSyntacticError(
                     _lexicalComponent.Lexeme,
@@ -264,10 +264,10 @@ namespace Compiler.SyntacticAnalyzer
             DebugInput(nextLevel, "<operating>");
 
             // Si no es un operando
-            if (_lexicalComponent.Category is not Category.Field
-                && _lexicalComponent.Category is not Category.Literal
-                && _lexicalComponent.Category is not Category.Integer
-                && _lexicalComponent.Category is not Category.Decimal)
+            if (_lexicalComponent.Category != Category.Field
+                && _lexicalComponent.Category != Category.Literal
+                && _lexicalComponent.Category != Category.Integer
+                && _lexicalComponent.Category != Category.Decimal)
             {
                 var error = Error.CreateSyntacticError(
                     _lexicalComponent.Lexeme,
@@ -296,12 +296,12 @@ namespace Compiler.SyntacticAnalyzer
             var nextLevel = indentation + "..";
             DebugInput(nextLevel, "<operator>");
 
-            if (_lexicalComponent.Category is not Category.DifferentThan
-                && _lexicalComponent.Category is not Category.GreaterThan
-                && _lexicalComponent.Category is not Category.LessThan
-                && _lexicalComponent.Category is not Category.EqualTo
-                && _lexicalComponent.Category is not Category.GreaterThanOrEqualTo
-                && _lexicalComponent.Category is not Category.LessThanOrEqualTo)
+            if (_lexicalComponent.Category != Category.DifferentThan
+                && _lexicalComponent.Category != Category.GreaterThan
+                && _lexicalComponent.Category != Category.LessThan
+                && _lexicalComponent.Category != Category.EqualTo
+                && _lexicalComponent.Category != Category.GreaterThanOrEqualTo
+                && _lexicalComponent.Category != Category.LessThanOrEqualTo)
             {
                 var error = Error.CreateSyntacticError(
                     _lexicalComponent.Lexeme,
