@@ -38,12 +38,14 @@
             this.symbolsTable = new System.Windows.Forms.DataGridView();
             this.reservedKeywordsTable = new System.Windows.Forms.DataGridView();
             this.literalsTable = new System.Windows.Forms.DataGridView();
+            this.errorsTable = new System.Windows.Forms.DataGridView();
             this.optionsTabControl.SuspendLayout();
             this.editorTab.SuspendLayout();
             this.fileSelectTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.symbolsTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.reservedKeywordsTable)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.literalsTable)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorsTable)).BeginInit();
             this.SuspendLayout();
             // 
             // codeTextBox
@@ -136,17 +138,27 @@
             // literalsTable
             // 
             this.literalsTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.literalsTable.Location = new System.Drawing.Point(242, 513);
+            this.literalsTable.Location = new System.Drawing.Point(19, 512);
             this.literalsTable.Name = "literalsTable";
             this.literalsTable.RowTemplate.Height = 25;
-            this.literalsTable.Size = new System.Drawing.Size(288, 150);
+            this.literalsTable.Size = new System.Drawing.Size(336, 150);
             this.literalsTable.TabIndex = 6;
+            // 
+            // errorsTable
+            // 
+            this.errorsTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.errorsTable.Location = new System.Drawing.Point(424, 512);
+            this.errorsTable.Name = "errorsTable";
+            this.errorsTable.RowTemplate.Height = 25;
+            this.errorsTable.Size = new System.Drawing.Size(364, 150);
+            this.errorsTable.TabIndex = 7;
             // 
             // Compiler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 704);
+            this.ClientSize = new System.Drawing.Size(800, 914);
+            this.Controls.Add(this.errorsTable);
             this.Controls.Add(this.literalsTable);
             this.Controls.Add(this.reservedKeywordsTable);
             this.Controls.Add(this.symbolsTable);
@@ -162,6 +174,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.symbolsTable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.reservedKeywordsTable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.literalsTable)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.errorsTable)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -179,6 +192,7 @@
         private System.Windows.Forms.DataGridView symbolsTable;
         private System.Windows.Forms.DataGridView reservedKeywordsTable;
         private System.Windows.Forms.DataGridView literalsTable;
+        private System.Windows.Forms.DataGridView errorsTable;
     }
 }
 

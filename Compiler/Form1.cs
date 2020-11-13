@@ -3,6 +3,7 @@ using Compiler.SymbolsTable;
 using Compiler.SyntacticAnalyzer;
 using System;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Windows.Forms;
 
@@ -54,6 +55,7 @@ namespace Compiler
             ConfigureSymbolsTable();
             ConfigureReservedWordsTable();
             ConfigureLiteralsTable();
+            ConfigureErrorsTable();
         }
 
         private void ConfigureSymbolsTable()
@@ -78,6 +80,11 @@ namespace Compiler
             literalsTable.Columns["LineNumber"].Visible = false;
             literalsTable.Columns["InitialPosition"].Visible = false;
             literalsTable.Columns["FinalPosition"].Visible = false;
+        }
+
+        private void ConfigureErrorsTable()
+        {
+            errorsTable.DataSource = ErrorHandler.ErrorHandler.ObtainAllErrors().Take(1).ToList();
         }
 
         private void selectFileButton_Click(object sender, EventArgs e)
